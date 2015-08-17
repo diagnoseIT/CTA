@@ -1,0 +1,4 @@
+dependencies {
+	compile project(':cta.api')
+	compile 'com.esotericsoftware:kryo:3.0.3'
+}
