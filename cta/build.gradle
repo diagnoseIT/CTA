@@ -1,0 +1,33 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+	apply plugin: 'checkstyle'
+	apply plugin: 'findbugs'
+	
+	sourceCompatibility = 1.8
+	
+    repositories {
+       mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.8.2'
+    }
+
+    version = '0.1'
+
+    jar {
+        manifest.attributes 'Version': version
+    }
+	
+	checkstyle {
+		ignoreFailures = false
+		configFile = new File("${projectDir}/../config/checkstyle/cta-checkstyle.xml")
+	 }
+	
+	findbugs {
+		ignoreFailures = false
+		excludeFilter = new File("${projectDir}/../config/findbugs/findBugsExcludeFilter.xml")
+		includeFilter = new File("${projectDir}/../config/findbugs/findBugsIncludeFilter.xml")
+	}
+}
