@@ -30,4 +30,10 @@ subprojects {
 		excludeFilter = new File("${projectDir}/../config/findbugs/findBugsExcludeFilter.xml")
 		includeFilter = new File("${projectDir}/../config/findbugs/findBugsIncludeFilter.xml")
 	}
+	
+}
+
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.4'
 }
