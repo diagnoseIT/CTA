@@ -9,6 +9,11 @@ package rocks.cta.api.core;
 public interface Location {
 
 	/**
+	 * String constant for unknown location properties.
+	 */
+	String UNKOWN = "unknown";
+
+	/**
 	 * 
 	 * @return unique host name or IP of the corresponding system node. "unknown" if not specified.
 	 */

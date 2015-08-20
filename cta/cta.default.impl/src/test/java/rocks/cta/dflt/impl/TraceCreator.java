@@ -95,9 +95,7 @@ public class TraceCreator {
 			return null;
 		}
 		CallableImpl callable = new CallableImpl(parent, subTrace);
-		if (parent != null) {
-			parent.addCallee(callable);
-		}
+
 		methodCounter++;
 		callable.setSignature(null, "package", "MyClass",
 				"SubTrace Invocation", null);

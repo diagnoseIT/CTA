@@ -1,6 +1,5 @@
 package rocks.cta.api.core;
 
-import java.util.Iterator;
 
 /**
  * A {@link Trace} subsumes a logical invocation sequence through the target system potentially
@@ -10,7 +9,7 @@ import java.util.Iterator;
  * @author Alexander Wert
  *
  */
-public interface Trace extends Iterable<Callable> {
+public interface Trace extends TreeIterable<Callable> {
 
 	/**
 	 * 
@@ -23,7 +22,7 @@ public interface Trace extends Iterable<Callable> {
 	 * 
 	 * @return an iterator on the tree structure of the sub traces
 	 */
-	Iterator<SubTrace> subTraceIterator();
+	TreeIterator<SubTrace> subTraceIterator();
 
 	/**
 	 * 

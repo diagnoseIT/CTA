@@ -3,6 +3,7 @@ package rocks.cta.dflt.impl;
 import java.io.Serializable;
 
 import rocks.cta.api.core.Location;
+import rocks.cta.api.utils.StringUtils;
 
 /**
  * Default implementation of the {@link Location} interface of the CTA.
@@ -81,6 +82,11 @@ public class LocationImpl implements Location, Serializable {
 	@Override
 	public String getBusinessTransaction() {
 		return businessTransaction;
+	}
+	
+	@Override
+	public String toString() {
+		return StringUtils.getStringRepresentation(this);
 	}
 
 }

@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.Trace;
-import rocks.cta.dflt.impl.iterators.CallableIterator;
-import rocks.cta.dflt.impl.iterators.CallableIteratorOnTrace;
-import rocks.cta.dflt.impl.iterators.SubTraceIterator;
+import rocks.cta.api.utils.CallableIterator;
+import rocks.cta.api.utils.CallableIteratorOnTrace;
+import rocks.cta.api.utils.SubTraceIterator;
 
 /**
  * JUnit test for the {@link TraceImpl} class and corresponding iterators
@@ -34,30 +34,24 @@ public class TraceImplTest {
 	}
 
 	/**
-	 * Tests the structure of a SubTrace and corresponding iterator
-	 * {@link CallableIterator}.
+	 * Tests the structure of a SubTrace and corresponding iterator {@link CallableIterator}.
 	 */
 	@Test
 	public void testTreeStructure() {
 		Assert.assertEquals(TraceCreator.SIZE, mainTrace.size());
-
+		Assert.assertEquals(TraceCreator.SIZE / 2 - 1, mainTrace.getRoot().getRoot().getChildCount());
 		int i = 1;
 		for (Callable clbl : mainTrace) {
-			if (i <= TraceCreator.IDX_ON_SUBTRACE_INVOCATION
-					|| i > TraceCreator.IDX_ON_SUBTRACE_INVOCATION_END) {
-				Assert.assertEquals(TraceCreator.ROOT_SUB_TRACE_ID, clbl
-						.getContainingSubTrace().getId());
+			if (i <= TraceCreator.IDX_ON_SUBTRACE_INVOCATION || i > TraceCreator.IDX_ON_SUBTRACE_INVOCATION_END) {
+				Assert.assertEquals(TraceCreator.ROOT_SUB_TRACE_ID, clbl.getContainingSubTrace().getId());
 			} else {
-				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl
-						.getContainingSubTrace().getId());
+				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl.getContainingSubTrace().getId());
 			}
 			if (i == TraceCreator.IDX_ON_SUBTRACE_INVOCATION) {
 				Assert.assertTrue(clbl.isSubTraceInvocation());
-				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl
-						.getInvokedSubTrace().getId());
+				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl.getInvokedSubTrace().getId());
 			}
-			Assert.assertEquals(TraceCreator.METHOD_PREFIX + i,
-					clbl.getMethodName());
+			Assert.assertEquals(TraceCreator.METHOD_PREFIX + i, clbl.getMethodName());
 			i++;
 		}
 	}

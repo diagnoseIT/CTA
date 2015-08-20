@@ -1,4 +1,4 @@
-package rocks.cta.dflt.impl.iterators;
+package rocks.cta.api.utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.Trace;
+import rocks.cta.api.core.TreeIterator;
 
 /**
  * Iterator over {@link SubTraces} of a {@link Trace}.
@@ -15,7 +16,7 @@ import rocks.cta.api.core.Trace;
  * @author Alexander Wert
  *
  */
-public class SubTraceIterator implements Iterator<SubTrace> {
+public class SubTraceIterator implements TreeIterator<SubTrace> {
 
 	/**
 	 * Stack of iterators to traverse the Trace structure.
@@ -26,7 +27,7 @@ public class SubTraceIterator implements Iterator<SubTrace> {
 	 * Current iterator on SubTraces.
 	 */
 	private Iterator<SubTrace> currentIterator;
-	
+
 	/**
 	 * current depth of the iterator position.
 	 */
@@ -69,11 +70,12 @@ public class SubTraceIterator implements Iterator<SubTrace> {
 		return tmpSubTrace;
 
 	}
-	
+
 	/**
 	 * 
 	 * @return the current depth of the iterator position.
 	 */
+	@Override
 	public int currentDepth() {
 		return currentDepth;
 	}

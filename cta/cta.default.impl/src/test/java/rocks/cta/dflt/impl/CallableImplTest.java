@@ -77,8 +77,6 @@ public class CallableImplTest {
 		CallableImpl c3 = new CallableImpl(c1, subTrace);
 		c3.setSignature(RETURN_TYPES[2], PACKAGE_NAMES[2], CLASS_NAMES[2],
 				METHOD_NAMES[2], Arrays.asList(PARAMETER_TYPES[2]));
-		c1.addCallee(c2);
-		c1.addCallee(c3);
 
 		callable = c1;
 	}
