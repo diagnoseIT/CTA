@@ -10,7 +10,7 @@ import java.util.List;
  * @author Alexander Wert
  *
  */
-public interface SubTrace extends Iterable<Callable> {
+public interface SubTrace extends TreeIterable<Callable> {
 	/**
 	 * 
 	 * @return the root {@link Callable} of the {@link SubTrace} (i.e. operation that represents the

@@ -1,4 +1,4 @@
-package rocks.cta.dflt.impl.iterators;
+package rocks.cta.api.utils;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.SubTrace;
+import rocks.cta.api.core.TreeIterator;
 
 /**
  * Iterator over Callables on a Trace.
@@ -13,7 +14,7 @@ import rocks.cta.api.core.SubTrace;
  * @author Alexander Wert
  *
  */
-public class CallableIteratorOnTrace implements Iterator<Callable> {
+public class CallableIteratorOnTrace implements TreeIterator<Callable> {
 
 	/**
 	 * Stack of iterators to traverse the SubTrace structure.
@@ -21,8 +22,7 @@ public class CallableIteratorOnTrace implements Iterator<Callable> {
 	private Stack<Iterator<Callable>> iteratorStack = new Stack<Iterator<Callable>>();
 
 	/**
-	 * Current iterator on Callables. This changes when a new SubTrace is
-	 * entered during traversing.
+	 * Current iterator on Callables. This changes when a new SubTrace is entered during traversing.
 	 */
 	private Iterator<Callable> currentIterator;
 
@@ -68,8 +68,7 @@ public class CallableIteratorOnTrace implements Iterator<Callable> {
 			stackedDepth += ((CallableIterator) currentIterator).currentDepth() + 1;
 			iteratorStack.push(currentIterator);
 
-			currentIterator = new CallableIterator(tmpCallable
-					.getInvokedSubTrace().getRoot());
+			currentIterator = new CallableIterator(tmpCallable.getInvokedSubTrace().getRoot());
 			tmpCallable = currentIterator.next();
 		}
 
@@ -81,9 +80,9 @@ public class CallableIteratorOnTrace implements Iterator<Callable> {
 	 * 
 	 * @return the current depth of the iterator position.
 	 */
+	@Override
 	public int currentDepth() {
-		return stackedDepth
-				+ ((CallableIterator) currentIterator).currentDepth();
+		return stackedDepth + ((CallableIterator) currentIterator).currentDepth();
 	}
 
 }

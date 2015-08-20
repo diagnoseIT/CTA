@@ -3,14 +3,15 @@ package rocks.cta.dflt.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.Location;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.Trace;
-import rocks.cta.dflt.impl.iterators.CallableIterator;
+import rocks.cta.api.core.TreeIterator;
+import rocks.cta.api.utils.CallableIterator;
+import rocks.cta.api.utils.StringUtils;
 
 /**
  * Default implementation of the {@link SubTrace} interface of the CTA.
@@ -89,7 +90,7 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	}
 
 	@Override
-	public Iterator<Callable> iterator() {
+	public TreeIterator<Callable> iterator() {
 		return new CallableIterator(getRoot());
 	}
 
@@ -207,25 +208,6 @@ public class SubTraceImpl implements SubTrace, Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder strBuilder = new StringBuilder();
-		String indent = "   ";
-		strBuilder.append("-------------- SubTrace (" + this.getId()
-				+ ") ---------------[ Response Time | Execution Time | CPU Time ][ms]\n");
-		CallableIterator iterator = (CallableIterator) this.iterator();
-		while (iterator.hasNext()) {
-			Callable callable = iterator.next();
-			for (int i = 0; i < iterator.currentDepth(); i++) {
-				strBuilder.append(indent);
-			}
-			strBuilder.append(callable.getClassName() + "."
-					+ callable.getMethodName() + " [ "
-					+ callable.getResponseTime() + " | "
-					+ callable.getExecutionTime() + " | " + callable.getCPUTime()
-					+ " ]\n");
-		}
-
-		strBuilder
-				.append("-------------------------------------------------------\n\n");
-		return strBuilder.toString();
+		return StringUtils.getStringRepresentation(this);
 	}
 }

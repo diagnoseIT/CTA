@@ -95,9 +95,6 @@ public class DefaultCTATransformer {
 	public CallableImpl transform(Callable callable, CallableImpl dfltParent,
 			SubTraceImpl dfltSubTrace) {
 		CallableImpl dfltCallable = new CallableImpl(dfltParent, dfltSubTrace);
-		if (dfltParent != null) {
-			dfltParent.addCallee(dfltCallable);
-		}
 		dfltCallable.setCPUTime(callable.getCPUTime());
 		dfltCallable.setEntryTime(callable.getEntryTime());
 		dfltCallable.setExecutionTime(callable.getExecutionTime());

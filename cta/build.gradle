@@ -1,39 +1,48 @@
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'eclipse'
+	apply plugin: 'java'
+	apply plugin: 'maven'
+	apply plugin: 'eclipse'
 	apply plugin: 'checkstyle'
 	apply plugin: 'findbugs'
-	
+
 	sourceCompatibility = 1.8
-	
-    repositories {
-       mavenCentral()
-    }
 
-    dependencies {
-        testCompile 'junit:junit:4.8.2'
-    }
+	repositories { mavenCentral() }
 
-    version = '0.1'
+	dependencies { testCompile 'junit:junit:4.8.2' }
 
-    jar {
-        manifest.attributes 'Version': version
-    }
-	
+	version = '1.0.0-SNAPSHOT'
+	group = 'rocks.cta'
+
+	jar { manifest.attributes 'Version': version }
+
 	checkstyle {
 		ignoreFailures = false
 		configFile = new File("${projectDir}/../config/checkstyle/cta-checkstyle.xml")
-	 }
-	
+	}
+
 	findbugs {
 		ignoreFailures = false
 		excludeFilter = new File("${projectDir}/../config/findbugs/findBugsExcludeFilter.xml")
 		includeFilter = new File("${projectDir}/../config/findbugs/findBugsIncludeFilter.xml")
 	}
-	
+
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				repository(url: "http://repository.novatec-gmbh.de/content/repositories/diagnoseIT/") {
+					authentication(userName: "${nexusUsername}", password: "${nexusPassword}")
+				}
+				snapshotRepository(url: "http://repository.novatec-gmbh.de/content/repositories/diagnoseIT-snapshots/") {
+					authentication(userName: "${nexusUsername}", password: "${nexusPassword}")
+				}
+				pom.version = "${project.version}"
+				pom.artifactId = "${project.name}"
+				pom.groupId = "${project.group}"
+			}
+		}
+	}
 }
 
 
-task wrapper(type: Wrapper) {
-	gradleVersion = '2.4'
-}
+task wrapper(type: Wrapper) { gradleVersion = '2.4' }

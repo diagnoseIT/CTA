@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * A {@link Callable} represents a node in a {@link SubTrace}, hence, stands for
- * any callable behaviour (e.g. operation execution).
+ * A {@link Callable} represents a node in a {@link SubTrace}, hence, stands for any callable
+ * behaviour (e.g. operation execution).
  * 
  * @author Alexander Wert
  *
@@ -15,24 +15,21 @@ public interface Callable {
 
 	/**
 	 * 
-	 * @return a list of all {@link Callable} instances invoked by the current
-	 *         {@link Callable}. The list contains the {@link Callable}
-	 *         instances in the order they have been called.
+	 * @return a list of all {@link Callable} instances invoked by the current {@link Callable}. The
+	 *         list contains the {@link Callable} instances in the order they have been called.
 	 */
 	List<Callable> getCallees();
 
 	/**
-	 * Returns the parent {@link Callable} of the current {@link Callable}
-	 * within the tree structure of the corresponding {@link SubTrace}.
+	 * Returns the parent {@link Callable} of the current {@link Callable} within the tree structure
+	 * of the corresponding {@link SubTrace}.
 	 * 
-	 * If the current {@link Callable} is the root of the current
-	 * {@link SubTrace} that has been called by another {@link SubTrace} then
-	 * this method returns the {@link TraceInvocation} instance of the (other)
-	 * calling {@link SubTrace}.
+	 * If the current {@link Callable} is the root of the current {@link SubTrace} that has been
+	 * called by another {@link SubTrace} then this method returns the {@link TraceInvocation}
+	 * instance of the (other) calling {@link SubTrace}.
 	 * 
-	 * If the current {@link Callable} is the root and the current
-	 * {@link SubTrace} is the root of the entire logical {@link Trace} then
-	 * this method returns null.
+	 * If the current {@link Callable} is the root and the current {@link SubTrace} is the root of
+	 * the entire logical {@link Trace} then this method returns null.
 	 * 
 	 * @return the parent
 	 */
@@ -46,22 +43,19 @@ public interface Callable {
 
 	/**
 	 * 
-	 * @return execution time (excluding the response time of nested callees) in
-	 *         milliseconds
+	 * @return execution time (excluding the response time of nested callees) in milliseconds
 	 */
 	long getExecutionTime();
 
 	/**
 	 * 
-	 * @return response time (including the response time of nested callees) in
-	 *         milliseconds
+	 * @return response time (including the response time of nested callees) in milliseconds
 	 */
 	long getResponseTime();
 
 	/**
 	 * 
-	 * @return CPU time (including the response time of nested callees) in
-	 *         milliseconds
+	 * @return CPU time (including the response time of nested callees) in milliseconds
 	 */
 	long getCPUTime();
 
@@ -78,8 +72,8 @@ public interface Callable {
 	long getExitTime();
 
 	/**
-	 * Returns the full qualified signature of the corresponding operation
-	 * (including all full-qualified types of the parameters).
+	 * Returns the full qualified signature of the corresponding operation (including all
+	 * full-qualified types of the parameters).
 	 * 
 	 * Example: org.my.MyClass.myMethod(org.my.Param1,org.my.Param2)
 	 * 
@@ -94,8 +88,7 @@ public interface Callable {
 	 * 
 	 * Example:
 	 * 
-	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method
-	 * would return "myMethod"
+	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method would return "myMethod"
 	 * 
 	 * @return method name
 	 */
@@ -106,8 +99,7 @@ public interface Callable {
 	 * 
 	 * Example:
 	 * 
-	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method
-	 * would return "MyClass"
+	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method would return "MyClass"
 	 * 
 	 * @return class name
 	 */
@@ -118,8 +110,7 @@ public interface Callable {
 	 * 
 	 * Example:
 	 * 
-	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method
-	 * would return "org.my"
+	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method would return "org.my"
 	 * 
 	 * @return package name
 	 */
@@ -130,28 +121,28 @@ public interface Callable {
 	 * 
 	 * 
 	 * 
-	 * @return {@link List} of full qualified class names for the parameter
-	 *         names of the corresponding operation
+	 * @return {@link List} of full qualified class names for the parameter names of the
+	 *         corresponding operation
 	 */
 	List<String> getParameterTypes();
 
 	/**
 	 * Returns the return type of the corresponding operation.
 	 * 
-	 * @return full qualified class name of the return type. If return type is unknown, then this method returns null;
+	 * @return full qualified class name of the return type. If return type is unknown, then this
+	 *         method returns null;
 	 */
 	String getReturnType();
 
 	/**
 	 * 
-	 * @return <code>true</code> if this {@link Callable} is a constructor,
-	 *         otherwise <code>false</code>
+	 * @return <code>true</code> if this {@link Callable} is a constructor, otherwise
+	 *         <code>false</code>
 	 */
 	boolean isConstructor();
 
 	/**
-	 * Lables convey simple additional information to for individual
-	 * {@link Callable} instances.
+	 * Lables convey simple additional information to for individual {@link Callable} instances.
 	 * 
 	 * @return a list of labels
 	 */
@@ -162,8 +153,8 @@ public interface Callable {
 	 * 
 	 * @param label
 	 *            the label value to check for
-	 * @return <code>true</code> if label is attached to this {@link Callable},
-	 *         otherwise <code>false</code>
+	 * @return <code>true</code> if label is attached to this {@link Callable}, otherwise
+	 *         <code>false</code>
 	 */
 	boolean hasLabel(String label);
 
@@ -174,12 +165,11 @@ public interface Callable {
 	Collection<AdditionalInformation> getAdditionalInformation();
 
 	/**
-	 * Returns a list of all additional information objects of the provided
-	 * type.
+	 * Returns a list of all additional information objects of the provided type.
 	 * 
 	 * @param type
-	 *            the {@link AdditionalInformation} type for which the
-	 *            information should be retrieved
+	 *            the {@link AdditionalInformation} type for which the information should be
+	 *            retrieved
 	 * @param <T>
 	 *            Class type of the retrieved additional information
 	 * @return list of additional information objects of the provided type
@@ -187,30 +177,36 @@ public interface Callable {
 	<T extends AdditionalInformation> Collection<T> getAdditionalInformation(Class<T> type);
 
 	/**
-	 * Indicates whether this {@link Callable} is an invocation of another
-	 * {@link SubTrace}.
+	 * Indicates whether this {@link Callable} is an invocation of another {@link SubTrace}.
 	 * 
-	 * @return <code>true</code>, if this {@link Callable} invokes another
-	 *         {@link SubTrace}, otherwise <code>false</code>
+	 * @return <code>true</code>, if this {@link Callable} invokes another {@link SubTrace},
+	 *         otherwise <code>false</code>
 	 */
 	boolean isSubTraceInvocation();
 
 	/**
-	 * Returns the invoked target trace if this {@link Callable} is an
-	 * invocation of another {@link SubTrace}.
+	 * Returns the invoked target trace if this {@link Callable} is an invocation of another
+	 * {@link SubTrace}.
 	 * 
-	 * @return the invoked target trace, or <code>null</code> if this
-	 *         {@link Callable} does not invoke another {@link SubTrace}
+	 * @return the invoked target trace, or <code>null</code> if this {@link Callable} does not
+	 *         invoke another {@link SubTrace}
 	 */
 	SubTrace getInvokedSubTrace();
 
 	/**
 	 * Indicates whether a trace invocation is asynchronous or not.
 	 * 
-	 * @return <code>true</code> if this {@link Callable} is an asynchronous
-	 *         invocation of another {@link SubTrace}, otherwise
-	 *         <code>false</code>
+	 * @return <code>true</code> if this {@link Callable} is an asynchronous invocation of another
+	 *         {@link SubTrace}, otherwise <code>false</code>
 	 */
 	boolean isAsyncInvocation();
+
+	/**
+	 * Returns the number of nodes below this {@link Callable} transitively including all children,
+	 * grandchildren, etc.
+	 * 
+	 * @return the number of nodes below this {@link Callable}
+	 */
+	int getChildCount();
 
 }

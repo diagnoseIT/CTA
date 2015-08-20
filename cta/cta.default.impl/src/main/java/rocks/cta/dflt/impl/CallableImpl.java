@@ -9,10 +9,11 @@ import java.util.List;
 import rocks.cta.api.core.AdditionalInformation;
 import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.SubTrace;
+import rocks.cta.api.utils.StringUtils;
 
 /**
- * Default Callable implementation. Contains all information like timings,
- * method characteristcs, etc. locally in the object.
+ * Default Callable implementation. Contains all information like timings, method characteristcs,
+ * etc. locally in the object.
  * 
  * @author Alexander Wert
  *
@@ -32,7 +33,7 @@ public class CallableImpl implements Callable, Serializable {
 	/**
 	 * Callable that called this Callable.
 	 */
-	private Callable parent;
+	private CallableImpl parent;
 
 	/**
 	 * Entry timestamp.
@@ -60,8 +61,7 @@ public class CallableImpl implements Callable, Serializable {
 	private int signatureId;
 
 	/**
-	 * List of label identifiers. Identifiers point to a repository in the
-	 * containing trace.
+	 * List of label identifiers. Identifiers point to a repository in the containing trace.
 	 */
 	private List<Integer> labelIds;
 
@@ -76,8 +76,7 @@ public class CallableImpl implements Callable, Serializable {
 	private boolean isSubTraceInvocation = false;
 
 	/**
-	 * Indicates whether this Callable conducts an asynchronous SubTrace
-	 * invocation.
+	 * Indicates whether this Callable conducts an asynchronous SubTrace invocation.
 	 */
 	private boolean isAsyncInvocation = false;
 
@@ -87,10 +86,15 @@ public class CallableImpl implements Callable, Serializable {
 	private SubTraceImpl parentSubTrace;
 
 	/**
-	 * If this Callable does a SubTrace invocation, this member variable points
-	 * to the invoked SubTrace.
+	 * If this Callable does a SubTrace invocation, this member variable points to the invoked
+	 * SubTrace.
 	 */
 	private SubTraceImpl targetSubTrace;
+
+	/**
+	 * Number of elements below this callable.
+	 */
+	private int childCount = 0;
 
 	/**
 	 * Default constructor.
@@ -106,9 +110,12 @@ public class CallableImpl implements Callable, Serializable {
 	 * @param containingSubTrace
 	 *            the SubTrace containing this Callable
 	 */
-	public CallableImpl(Callable parent, SubTraceImpl containingSubTrace) {
+	public CallableImpl(CallableImpl parent, SubTraceImpl containingSubTrace) {
 		super();
 		this.parent = parent;
+		if (parent != null) {
+			parent.addCallee(this);
+		}
 		this.parentSubTrace = containingSubTrace;
 	}
 
@@ -117,7 +124,7 @@ public class CallableImpl implements Callable, Serializable {
 		if (children == null) {
 			return Collections.emptyList();
 		} else {
-			return children;
+			return Collections.unmodifiableList(children);
 		}
 
 	}
@@ -128,11 +135,12 @@ public class CallableImpl implements Callable, Serializable {
 	 * @param callee
 	 *            a Callables called by this Callable
 	 */
-	public void addCallee(Callable callee) {
+	private void addCallee(Callable callee) {
 		if (children == null) {
 			children = new ArrayList<Callable>();
 		}
 		children.add(callee);
+		updateChildCount(callee.getChildCount() + 1);
 	}
 
 	@Override
@@ -205,11 +213,8 @@ public class CallableImpl implements Callable, Serializable {
 	 * @param parameterTypes
 	 *            list of full qualified parameter types
 	 */
-	public void setSignature(String returnType, String packageName,
-			String className, String methodName, List<String> parameterTypes) {
-		signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace())
-				.registerSignature(returnType, packageName, className,
-						methodName, parameterTypes);
+	public void setSignature(String returnType, String packageName, String className, String methodName, List<String> parameterTypes) {
+		signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerSignature(returnType, packageName, className, methodName, parameterTypes);
 	}
 
 	@Override
@@ -248,12 +253,11 @@ public class CallableImpl implements Callable, Serializable {
 			return Collections.emptyList();
 		}
 		List<String> labels = new ArrayList<String>();
-		TraceImpl trace = ((TraceImpl) getContainingSubTrace()
-				.getContainingTrace());
+		TraceImpl trace = ((TraceImpl) getContainingSubTrace().getContainingTrace());
 		for (int id : labelIds) {
 			labels.add(trace.getStringConstant(id));
 		}
-		return labels;
+		return Collections.unmodifiableList(labels);
 	}
 
 	/**
@@ -268,8 +272,7 @@ public class CallableImpl implements Callable, Serializable {
 			labelIds = new ArrayList<Integer>();
 		}
 
-		int hash = ((TraceImpl) getContainingSubTrace().getContainingTrace())
-				.registerStringConstant(label);
+		int hash = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(label);
 		labelIds.add(hash);
 	}
 
@@ -286,7 +289,7 @@ public class CallableImpl implements Callable, Serializable {
 		if (additionInfos == null) {
 			return Collections.emptyList();
 		}
-		return additionInfos;
+		return Collections.unmodifiableList(additionInfos);
 	}
 
 	/**
@@ -304,15 +307,14 @@ public class CallableImpl implements Callable, Serializable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends AdditionalInformation> Collection<T> getAdditionalInformation(
-			Class<T> type) {
+	public <T extends AdditionalInformation> Collection<T> getAdditionalInformation(Class<T> type) {
 		List<T> result = new ArrayList<T>();
 		for (AdditionalInformation aInfo : additionInfos) {
 			if (type.isAssignableFrom(aInfo.getClass())) {
 				result.add((T) aInfo);
 			}
 		}
-		return result;
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -336,17 +338,15 @@ public class CallableImpl implements Callable, Serializable {
 	}
 
 	/**
-	 * If this Callable represents a SubTrace invocation, this method allows to
-	 * set the invoked SubTrace.
+	 * If this Callable represents a SubTrace invocation, this method allows to set the invoked
+	 * SubTrace.
 	 * 
 	 * @param subTrace
 	 *            the invoked SubTrace
 	 */
 	public void setInvokedSubTrace(SubTraceImpl subTrace) {
 		if (!isSubTraceInvocation) {
-			throw new IllegalStateException(
-					"Cannot specify traget SubTrace property to a Callable that is not a SubTrace invocation. "
-							+ "Make sure that subTraceInvocation is set to true.");
+			throw new IllegalStateException("Cannot specify traget SubTrace property to a Callable that is not a SubTrace invocation. " + "Make sure that subTraceInvocation is set to true.");
 		}
 		targetSubTrace = subTrace;
 	}
@@ -357,35 +357,53 @@ public class CallableImpl implements Callable, Serializable {
 	}
 
 	/**
-	 * If this Callable represents a SubTrace invocation, this method allows to
-	 * set whether the invocation is asynchronous or not.
+	 * If this Callable represents a SubTrace invocation, this method allows to set whether the
+	 * invocation is asynchronous or not.
 	 * 
 	 * @param isAsyncInvocation
 	 *            boolean value
 	 */
 	public void setIsAyncInvocation(boolean isAsyncInvocation) {
 		if (!isSubTraceInvocation) {
-			throw new IllegalStateException(
-					"Cannot specify asynchronous invocation property to a Callable that is not a SubTrace invocation. "
-							+ "Make sure that subTraceInvocation is set to true.");
+			throw new IllegalStateException("Cannot specify asynchronous invocation property to a Callable that is not a SubTrace invocation. " + "Make sure that subTraceInvocation is set to true.");
 		}
 		this.isAsyncInvocation = isAsyncInvocation;
 	}
 
 	/**
-	 * Resolves the Signature object from the repository in the corresponding
-	 * Trace object.
+	 * Resolves the Signature object from the repository in the corresponding Trace object.
 	 * 
 	 * @return returns the Signature object for this Callable
 	 */
 	private Signature resolveSignature() {
-		Signature signature = ((TraceImpl) getContainingSubTrace()
-				.getContainingTrace()).getSignature(signatureId);
+		Signature signature = ((TraceImpl) getContainingSubTrace().getContainingTrace()).getSignature(signatureId);
 		if (signature == null) {
-			throw new IllegalStateException(
-					"Signature has not been specified, yet!");
+			throw new IllegalStateException("Signature has not been specified, yet!");
 		}
 		return signature;
 	}
 
+	@Override
+	public String toString() {
+		return StringUtils.getStringRepresentation(this);
+	}
+
+	@Override
+	public int getChildCount() {
+		return childCount;
+	}
+
+	/**
+	 * Updates the child count of this node by increasing the current child count by the passed
+	 * childCountIncrease.
+	 * 
+	 * @param childCountIncrease
+	 *            the childCount to increment the current child count by
+	 */
+	private void updateChildCount(int childCountIncrease) {
+		this.childCount += childCountIncrease;
+		if (parent != null) {
+			parent.updateChildCount(childCountIncrease);
+		}
+	}
 }

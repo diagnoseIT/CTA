@@ -11,8 +11,10 @@ import java.util.Map;
 import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.Trace;
-import rocks.cta.dflt.impl.iterators.CallableIteratorOnTrace;
-import rocks.cta.dflt.impl.iterators.SubTraceIterator;
+import rocks.cta.api.core.TreeIterator;
+import rocks.cta.api.utils.CallableIteratorOnTrace;
+import rocks.cta.api.utils.StringUtils;
+import rocks.cta.api.utils.SubTraceIterator;
 
 /**
  * Default implementation of the {@link Trace} interface of the CTA.
@@ -69,7 +71,7 @@ public class TraceImpl implements Trace, Serializable {
 	}
 
 	@Override
-	public Iterator<Callable> iterator() {
+	public TreeIterator<Callable> iterator() {
 		return new CallableIteratorOnTrace(getRoot());
 	}
 
@@ -89,7 +91,7 @@ public class TraceImpl implements Trace, Serializable {
 	}
 
 	@Override
-	public Iterator<SubTrace> subTraceIterator() {
+	public TreeIterator<SubTrace> subTraceIterator() {
 		return new SubTraceIterator(getRoot());
 	}
 
@@ -128,8 +130,7 @@ public class TraceImpl implements Trace, Serializable {
 	}
 
 	/**
-	 * Registers a new {@link Signature} if it is not contained in the
-	 * repository, yet.
+	 * Registers a new {@link Signature} if it is not contained in the repository, yet.
 	 * 
 	 * @param returnType
 	 *            return type
@@ -143,8 +144,7 @@ public class TraceImpl implements Trace, Serializable {
 	 *            list of parameter types
 	 * @return id of the registered signature
 	 */
-	protected int registerSignature(String returnType, String packageName,
-			String className, String methodName, List<String> parameterTypes) {
+	protected int registerSignature(String returnType, String packageName, String className, String methodName, List<String> parameterTypes) {
 		int methodNameId = registerStringConstant(methodName);
 		int packageNameId = registerStringConstant(packageName);
 		int classNameId = registerStringConstant(className);
@@ -159,8 +159,7 @@ public class TraceImpl implements Trace, Serializable {
 			pTypeIds = Collections.emptyList();
 		}
 
-		Signature signature = new Signature(this, methodNameId, packageNameId,
-				classNameId, pTypeIds, returnTypeId);
+		Signature signature = new Signature(this, methodNameId, packageNameId, classNameId, pTypeIds, returnTypeId);
 
 		if (containedSignatures == null) {
 			containedSignatures = new HashMap<Integer, Signature>();
@@ -189,8 +188,7 @@ public class TraceImpl implements Trace, Serializable {
 	}
 
 	/**
-	 * Registers a new String constant if it is not contained in the registry,
-	 * yet.
+	 * Registers a new String constant if it is not contained in the registry, yet.
 	 * 
 	 * @param stringConstant
 	 *            stringConstant to register
@@ -209,22 +207,7 @@ public class TraceImpl implements Trace, Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder strBuilder = new StringBuilder();
-		String indent = "   ";
-		strBuilder.append("-------------- Trace (" + this.getLogicalTraceId()
-				+ ") ---------------\n");
-		SubTraceIterator iterator = (SubTraceIterator) this.subTraceIterator();
-		while (iterator.hasNext()) {
-			SubTrace subTrace = iterator.next();
-			for (int i = 0; i < iterator.currentDepth(); i++) {
-				strBuilder.append(indent);
-			}
-			strBuilder.append("SubTrace-" + subTrace.getId() + "\n");
-		}
-
-		strBuilder
-				.append("-------------------------------------------------------\n\n");
-		return strBuilder.toString();
+		return StringUtils.getStringRepresentation(this);
 	}
 
 }
