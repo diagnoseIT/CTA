@@ -27,13 +27,18 @@ subprojects {
 		includeFilter = new File("${projectDir}/../config/findbugs/findBugsIncludeFilter.xml")
 	}
 
+	def nexusSnapshotUrl = project.hasProperty('nexusSnapshotUrl') ? project['nexusSnapshotUrl'] : ''
+	def nexusReleaseUrl = project.hasProperty('nexusReleaseUrl') ? project['nexusReleaseUrl'] : ''
+	def nexusUsername = project.hasProperty('nexusUsername') ? project['nexusUsername'] : ''
+	def nexusPassword = project.hasProperty('nexusPassword') ? project['nexusPassword'] : ''
+
 	uploadArchives {
 		repositories {
 			mavenDeployer {
-				repository(url: "http://repository.novatec-gmbh.de/content/repositories/diagnoseIT/") {
+				repository(url: "${nexusReleaseUrl}") {
 					authentication(userName: "${nexusUsername}", password: "${nexusPassword}")
 				}
-				snapshotRepository(url: "http://repository.novatec-gmbh.de/content/repositories/diagnoseIT-snapshots/") {
+				snapshotRepository(url: "${nexusSnapshotUrl}") {
 					authentication(userName: "${nexusUsername}", password: "${nexusPassword}")
 				}
 				pom.version = "${project.version}"
@@ -42,6 +47,17 @@ subprojects {
 			}
 		}
 	}
+
+	task checkProperties << {
+		if (!nexusUsername || !nexusPassword || !nexusReleaseUrl  || !nexusSnapshotUrl ) {
+			throw new IllegalArgumentException("Cannot perform uploadArchives task due to missing repository settings!\n" +
+			"Please specify the following properties: nexusReleaseUrl, nexusSnapshotUrl, nexusUsername, nexusPassword");
+		}
+	}
+
+	uploadArchives.dependsOn checkProperties
+
+
 }
 
 

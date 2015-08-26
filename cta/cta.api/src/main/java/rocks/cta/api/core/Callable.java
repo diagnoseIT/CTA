@@ -5,13 +5,14 @@ import java.util.List;
 
 /**
  * A {@link Callable} represents a node in a {@link SubTrace}, hence, stands for any callable
- * behaviour (e.g. operation execution).
+ * behaviour (e.g. operation execution). A {@link Callable} is iterable in the sense that the
+ * iterator traverses the sub-tree below the corresponding {@link Callable} instance.
  * 
  * @author Alexander Wert
  *
  */
 
-public interface Callable {
+public interface Callable extends Iterable<Callable> {
 
 	/**
 	 * 
@@ -43,19 +44,19 @@ public interface Callable {
 
 	/**
 	 * 
-	 * @return execution time (excluding the response time of nested callees) in milliseconds
+	 * @return execution time (excluding the response time of nested callees) in nanoseconds
 	 */
 	long getExecutionTime();
 
 	/**
 	 * 
-	 * @return response time (including the response time of nested callees) in milliseconds
+	 * @return response time (including the response time of nested callees) in nanoseconds
 	 */
 	long getResponseTime();
 
 	/**
 	 * 
-	 * @return CPU time (including the response time of nested callees) in milliseconds
+	 * @return CPU time (including the response time of nested callees) in nanoseconds
 	 */
 	long getCPUTime();
 
