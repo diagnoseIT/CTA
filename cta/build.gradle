@@ -27,10 +27,10 @@ subprojects {
 		includeFilter = new File("${projectDir}/../config/findbugs/findBugsIncludeFilter.xml")
 	}
 
-	def nexusSnapshotUrl = project.hasProperty('nexusSnapshotUrl') ? project['nexusSnapshotUrl'] : ''
-	def nexusReleaseUrl = project.hasProperty('nexusReleaseUrl') ? project['nexusReleaseUrl'] : ''
-	def nexusUsername = project.hasProperty('nexusUsername') ? project['nexusUsername'] : ''
-	def nexusPassword = project.hasProperty('nexusPassword') ? project['nexusPassword'] : ''
+	def nexusSnapshotUrl = project.hasProperty('nexusSnapshotUrl') ? project['nexusSnapshotUrl'] : System.getenv('nexusSnapshotUrl')
+	def nexusReleaseUrl = project.hasProperty('nexusReleaseUrl') ? project['nexusReleaseUrl'] : System.getenv('nexusReleaseUrl')
+	def nexusUsername = project.hasProperty('nexusUsername') ? project['nexusUsername'] : System.getenv('nexusUsername')
+	def nexusPassword = project.hasProperty('nexusPassword') ? project['nexusPassword'] : System.getenv('nexusPassword')
 
 	uploadArchives {
 		repositories {
