@@ -1,5 +1,8 @@
 package rocks.cta.api.utils;
 
+import java.text.DecimalFormat;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.Location;
 import rocks.cta.api.core.SubTrace;
@@ -13,7 +16,16 @@ import rocks.cta.api.core.TreeIterator;
  *
  */
 public final class StringUtils {
+	/**
+	 * Double String formatter.
+	 */
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
+	/**
+	 * Nano to milli seconds transformer factor.
+	 */
+	private static final double NANOS_TO_MILLIS_FACTOR = 0.000001;
+	
 	/**
 	 * Start and end line of a String representation of a {@link SubTrace}.
 	 */
@@ -43,11 +55,11 @@ public final class StringUtils {
 		strBuilder.append(".");
 		strBuilder.append(callable.getMethodName());
 		strBuilder.append(" [ ");
-		strBuilder.append(callable.getResponseTime());
+		strBuilder.append(DECIMAL_FORMAT.format(((double) callable.getResponseTime()) * NANOS_TO_MILLIS_FACTOR));
 		strBuilder.append(" | ");
-		strBuilder.append(callable.getExecutionTime());
+		strBuilder.append(DECIMAL_FORMAT.format(((double) callable.getExecutionTime()) * NANOS_TO_MILLIS_FACTOR));
 		strBuilder.append(" | ");
-		strBuilder.append(callable.getCPUTime());
+		strBuilder.append(DECIMAL_FORMAT.format(((double) callable.getCPUTime()) * NANOS_TO_MILLIS_FACTOR));
 		strBuilder.append(" ]");
 		return strBuilder.toString();
 	}
@@ -166,5 +178,43 @@ public final class StringUtils {
 		strBuilder.append(" | ");
 		strBuilder.append(location.getBusinessTransaction());
 		return strBuilder.toString();
+	}
+
+	/**
+	 * Constructs the String representation for path from the passed {@link Callable} instance to
+	 * its root in the corresponding {@link SubTrace}.
+	 * 
+	 * @param callable
+	 *            {@link Callable} instance defining the path
+	 * @return string representation of the path
+	 */
+	public static String getPathFromRootAsString(Callable callable) {
+		return getPathFromRootAsString(callable, new AtomicInteger(0));
+	}
+
+	/**
+	 * Recursively constructs the String representation for path from the passed {@link Callable}
+	 * instance to its root in the corresponding {@link SubTrace}.
+	 * 
+	 * @param callable
+	 *            {@link Callable} instance defining the path
+	 * @param depth
+	 *            recursive depth value
+	 * @return string representation of the path
+	 */
+	private static String getPathFromRootAsString(Callable callable, AtomicInteger depth) {
+		String result = null;
+		if (callable.getParent() == null) {
+			result = callable.toString();
+		} else {
+			String parentStr = getPathFromRootAsString(callable.getParent(), depth);
+			String indent = "";
+			for (int i = 0; i < depth.get(); i++) {
+				indent += "   ";
+			}
+			result = parentStr + System.lineSeparator() + indent + callable.toString();
+		}
+		depth.incrementAndGet();
+		return result;
 	}
 }

@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import rocks.cta.api.core.AdditionalInformation;
 import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.SubTrace;
+import rocks.cta.api.utils.CallableIterator;
 import rocks.cta.api.utils.StringUtils;
 
 /**
@@ -19,6 +21,11 @@ import rocks.cta.api.utils.StringUtils;
  *
  */
 public class CallableImpl implements Callable, Serializable {
+
+	/**
+	 * Nano to milli seconds transformer factor.
+	 */
+	private static final double NANOS_TO_MILLIS_FACTOR = 0.000001;
 
 	/**
 	 * 
@@ -191,7 +198,7 @@ public class CallableImpl implements Callable, Serializable {
 
 	@Override
 	public long getExitTime() {
-		return entryTime + responseTime;
+		return entryTime + Math.round(((double) responseTime) * NANOS_TO_MILLIS_FACTOR);
 	}
 
 	@Override
@@ -405,5 +412,10 @@ public class CallableImpl implements Callable, Serializable {
 		if (parent != null) {
 			parent.updateChildCount(childCountIncrease);
 		}
+	}
+
+	@Override
+	public Iterator<Callable> iterator() {
+		return new CallableIterator(this);
 	}
 }
