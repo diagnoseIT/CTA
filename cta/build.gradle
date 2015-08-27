@@ -1,15 +1,31 @@
-subprojects {
+plugins { id "net.saliman.cobertura" version "2.2.8" }
+
+
+def files = subprojects.collect { new File(it.projectDir, '/build/cobertura/cobertura.ser') }
+cobertura {
+    coverageFormats = ['xml']
+    coverageMergeDatafiles = files
+}
+
+
+allprojects{
 	apply plugin: 'java'
 	apply plugin: 'maven'
 	apply plugin: 'eclipse'
 	apply plugin: 'checkstyle'
 	apply plugin: 'findbugs'
+	apply plugin: 'cobertura'
+	repositories { mavenCentral() }
+}
+
+subprojects {
 
 	sourceCompatibility = 1.8
 
-	repositories { mavenCentral() }
-
-	dependencies { testCompile 'junit:junit:4.8.2' }
+	dependencies {
+		testCompile 'junit:junit:4.8.2'
+		testCompile 'net.sourceforge.cobertura:cobertura:2.1.1'
+	}
 
 	version = '1.0.0-SNAPSHOT'
 	group = 'rocks.cta'
@@ -25,6 +41,10 @@ subprojects {
 		ignoreFailures = false
 		excludeFilter = new File("${projectDir}/../config/findbugs/findBugsExcludeFilter.xml")
 		includeFilter = new File("${projectDir}/../config/findbugs/findBugsIncludeFilter.xml")
+	}
+
+	cobertura {
+		coverageIgnoreTrivial = true
 	}
 
 	def nexusSnapshotUrl = project.hasProperty('nexusSnapshotUrl') ? project['nexusSnapshotUrl'] : System.getenv('nexusSnapshotUrl')
@@ -56,8 +76,7 @@ subprojects {
 	}
 
 	uploadArchives.dependsOn checkProperties
-
-
+	parent.test.dependsOn test
 }
 
 
