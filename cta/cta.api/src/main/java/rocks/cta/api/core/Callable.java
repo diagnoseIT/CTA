@@ -59,6 +59,12 @@ public interface Callable extends Iterable<Callable> {
 	 * @return CPU time (including the response time of nested callees) in nanoseconds
 	 */
 	long getCPUTime();
+	
+	/**
+	 * 
+	 * @return exclusive CPU time (excluding the CPU time of nested callees) in nanoseconds
+	 */
+	long getExclusiveCPUTime();
 
 	/**
 	 * 

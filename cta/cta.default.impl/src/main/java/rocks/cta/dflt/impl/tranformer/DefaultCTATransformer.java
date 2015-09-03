@@ -97,7 +97,6 @@ public class DefaultCTATransformer {
 		CallableImpl dfltCallable = new CallableImpl(dfltParent, dfltSubTrace);
 		dfltCallable.setCPUTime(callable.getCPUTime());
 		dfltCallable.setEntryTime(callable.getEntryTime());
-		dfltCallable.setExecutionTime(callable.getExecutionTime());
 		dfltCallable.setResponseTime(callable.getResponseTime());
 		dfltCallable.setSignature(callable.getReturnType(),
 				callable.getPackageName(), callable.getClassName(),

@@ -109,7 +109,6 @@ public class TraceCreator {
 			newSubTrace.setRoot(newRootCallable);
 			callable.setIsSubTraceInvocation(true);
 			callable.setInvokedSubTrace(newSubTrace);
-			subTrace.addSubTrace(newSubTrace);
 		}
 
 		for (int i = 0; i < WIDTH; i++) {

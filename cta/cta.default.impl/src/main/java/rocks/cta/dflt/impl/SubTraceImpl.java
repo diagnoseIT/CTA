@@ -71,9 +71,10 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	 */
 	public SubTraceImpl() {
 	}
-	
+
 	/**
-	 * Constructor.
+	 * Constructor. Adds the newly created {@link SubTrace} instance to the passed parent if the
+	 * parent is not null!
 	 * 
 	 * @param subTraceId
 	 *            the identifier of this SubTrace
@@ -82,10 +83,12 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	 * @param containingTrace
 	 *            trace containing this SubTrace
 	 */
-	public SubTraceImpl(long subTraceId, SubTraceImpl parentSubTrace,
-			TraceImpl containingTrace) {
+	public SubTraceImpl(long subTraceId, SubTraceImpl parentSubTrace, TraceImpl containingTrace) {
 		this.subTraceId = subTraceId;
 		this.parentSubTrace = parentSubTrace;
+		if (parentSubTrace != null) {
+			parentSubTrace.addSubTrace(this);
+		}
 		this.containingTrace = containingTrace;
 	}
 
@@ -169,12 +172,10 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	}
 
 	/**
-	 * Recursively calculates the maximal depth of the sub tree below the passed
-	 * Callable.
+	 * Recursively calculates the maximal depth of the sub tree below the passed Callable.
 	 * 
 	 * @param callable
-	 *            root of the sub tree for which the maximal depth shell be
-	 *            calculated
+	 *            root of the sub tree for which the maximal depth shell be calculated
 	 * @return the maximal depth
 	 */
 	private int maxDepth(Callable callable) {
@@ -210,4 +211,39 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	public String toString() {
 		return StringUtils.getStringRepresentation(this);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (subTraceId ^ (subTraceId >>> 32));
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		SubTraceImpl other = (SubTraceImpl) obj;
+		if (subTraceId != other.subTraceId) {
+			return false;
+		}
+		return true;
+	}
+
 }

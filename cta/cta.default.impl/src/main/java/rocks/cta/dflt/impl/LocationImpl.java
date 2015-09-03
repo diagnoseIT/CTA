@@ -21,29 +21,34 @@ public class LocationImpl implements Location, Serializable {
 	/**
 	 * Identifies the machine.
 	 */
-	private String host;
+	private String host = UNKOWN;
 
 	/**
 	 * Identifies the runtime environment (e.g. the JVM).
 	 */
-	private String runTimeEnvironment;
+	private String runTimeEnvironment = UNKOWN;
 
 	/**
 	 * Identifies the application.
 	 */
-	private String application;
+	private String application = UNKOWN;
 
 	/**
 	 * Identifies the business transaction.
 	 */
-	private String businessTransaction;
+	private String businessTransaction = UNKOWN;
+
+	/**
+	 * Identifies the node type.
+	 */
+	private String nodeType = UNKOWN;
 
 	/**
 	 * Default constructor.
 	 */
 	public LocationImpl() {
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -56,12 +61,11 @@ public class LocationImpl implements Location, Serializable {
 	 * @param businessTransaction
 	 *            Identifies the business transaction
 	 */
-	public LocationImpl(String host, String runTimeEnvironment,
-			String application, String businessTransaction) {
-		this.host = host;
-		this.runTimeEnvironment = runTimeEnvironment;
-		this.application = application;
-		this.businessTransaction = businessTransaction;
+	public LocationImpl(String host, String runTimeEnvironment, String application, String businessTransaction) {
+		this.setHost(host);
+		this.setRunTimeEnvironment(runTimeEnvironment);
+		this.setApplication(application);
+		this.setBusinessTransaction(businessTransaction);
 	}
 
 	@Override
@@ -71,7 +75,7 @@ public class LocationImpl implements Location, Serializable {
 
 	@Override
 	public String getRuntimeEnvironment() {
-		return runTimeEnvironment;
+		return getRunTimeEnvironment();
 	}
 
 	@Override
@@ -83,10 +87,62 @@ public class LocationImpl implements Location, Serializable {
 	public String getBusinessTransaction() {
 		return businessTransaction;
 	}
-	
+
+	@Override
+	public String getNodeType() {
+		return nodeType;
+	}
+
 	@Override
 	public String toString() {
 		return StringUtils.getStringRepresentation(this);
+	}
+
+	/**
+	 * @param host
+	 *            the host to set
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	/**
+	 * @return the runTimeEnvironment
+	 */
+	public String getRunTimeEnvironment() {
+		return runTimeEnvironment;
+	}
+
+	/**
+	 * @param runTimeEnvironment
+	 *            the runTimeEnvironment to set
+	 */
+	public void setRunTimeEnvironment(String runTimeEnvironment) {
+		this.runTimeEnvironment = runTimeEnvironment;
+	}
+
+	/**
+	 * @param application
+	 *            the application to set
+	 */
+	public void setApplication(String application) {
+		this.application = application;
+	}
+
+	/**
+	 * @param businessTransaction
+	 *            the businessTransaction to set
+	 */
+	public void setBusinessTransaction(String businessTransaction) {
+		this.businessTransaction = businessTransaction;
+	}
+
+	/**
+	 * @param nodeType
+	 *            the nodeType to set
+	 */
+	public void setNodeType(String nodeType) {
+		this.nodeType = nodeType;
 	}
 
 }

@@ -39,4 +39,11 @@ public interface Location {
 	 *         specified.
 	 */
 	String getBusinessTransaction();
+
+	/**
+	 * 
+	 * @return identifier of the node type (e.g. "Application Node", "Messaging Node", etc.) the
+	 *         {@link SubTrace} belongs to. "unknown" if not specified.
+	 */
+	String getNodeType();
 }

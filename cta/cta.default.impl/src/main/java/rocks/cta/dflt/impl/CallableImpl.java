@@ -48,11 +48,6 @@ public class CallableImpl implements Callable, Serializable {
 	private long entryTime = -1;
 
 	/**
-	 * Execution time (exclusive duration).
-	 */
-	private long executionTime = -1;
-
-	/**
 	 * Response time.
 	 */
 	private long responseTime = -1;
@@ -110,7 +105,8 @@ public class CallableImpl implements Callable, Serializable {
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor. Adds the newly created {@link Callable} instance to the passed parent if the
+	 * parent is not null!
 	 * 
 	 * @param parent
 	 *            Callable that called this Callable
@@ -162,11 +158,12 @@ public class CallableImpl implements Callable, Serializable {
 
 	@Override
 	public long getExecutionTime() {
-		return executionTime;
-	}
+		long executionTime = responseTime;
+		for (Callable child : children) {
+			executionTime -= child.getResponseTime();
+		}
 
-	public void setExecutionTime(long execTime) {
-		executionTime = execTime;
+		return executionTime;
 	}
 
 	@Override
@@ -185,6 +182,15 @@ public class CallableImpl implements Callable, Serializable {
 
 	public void setCPUTime(long cpuTime) {
 		this.cpuTime = cpuTime;
+	}
+
+	@Override
+	public long getExclusiveCPUTime() {
+		long exclCPUTime = cpuTime;
+		for (Callable child : children) {
+			exclCPUTime -= child.getCPUTime();
+		}
+		return exclCPUTime;
 	}
 
 	@Override
@@ -418,4 +424,5 @@ public class CallableImpl implements Callable, Serializable {
 	public Iterator<Callable> iterator() {
 		return new CallableIterator(this);
 	}
+
 }
