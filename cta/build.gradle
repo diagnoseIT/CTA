@@ -27,7 +27,7 @@ subprojects {
 		testCompile 'net.sourceforge.cobertura:cobertura:2.1.1'
 	}
 
-	version = '1.0.0-SNAPSHOT'
+	version = '0.1.0-SNAPSHOT'
 	group = 'rocks.cta'
 
 	jar { manifest.attributes 'Version': version }
@@ -35,6 +35,7 @@ subprojects {
 	checkstyle {
 		ignoreFailures = false
 		configFile = new File("${projectDir}/../config/checkstyle/cta-checkstyle.xml")
+		sourceSets = [sourceSets.main]
 	}
 
 	findbugs {

@@ -1,17 +1,19 @@
-package rocks.cta.dflt.impl;
+package rocks.cta.dflt.impl.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.Location;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.Trace;
 import rocks.cta.api.core.TreeIterator;
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.NestingCallable;
 import rocks.cta.api.utils.CallableIterator;
 import rocks.cta.api.utils.StringUtils;
+import rocks.cta.dflt.impl.core.callables.AbstractCallableImpl;
 
 /**
  * Default implementation of the {@link SubTrace} interface of the CTA.
@@ -29,7 +31,7 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	/**
 	 * Root Callable.
 	 */
-	private Callable root;
+	private AbstractCallableImpl root;
 
 	/**
 	 * SubTrace that invoked this SubTrace.
@@ -103,12 +105,12 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	}
 
 	/**
-	 * Setter for the root callable.
+	 * Setter for the root.
 	 * 
 	 * @param root
 	 *            root of this SUbTrace
 	 */
-	public void setRoot(Callable root) {
+	public void setRoot(AbstractCallableImpl root) {
 		this.root = root;
 	}
 
@@ -122,7 +124,7 @@ public class SubTraceImpl implements SubTrace, Serializable {
 		if (childSubTraces == null) {
 			return Collections.emptyList();
 		}
-		return childSubTraces;
+		return Collections.unmodifiableList(childSubTraces);
 	}
 
 	/**
@@ -166,7 +168,12 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	@Override
 	public int maxDepth() {
 		if (maxDepth < 0) {
-			maxDepth = maxDepth(getRoot());
+			if (getRoot() instanceof NestingCallable) {
+				maxDepth = maxDepth((NestingCallable) getRoot());
+			} else {
+				maxDepth = 0;
+			}
+
 		}
 		return maxDepth;
 	}
@@ -178,12 +185,12 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	 *            root of the sub tree for which the maximal depth shell be calculated
 	 * @return the maximal depth
 	 */
-	private int maxDepth(Callable callable) {
+	private int maxDepth(NestingCallable callable) {
 		if (callable.getCallees().isEmpty()) {
 			return 0;
 		} else {
 			int maxDepth = -1;
-			for (Callable child : callable.getCallees()) {
+			for (NestingCallable child : callable.getCallees(NestingCallable.class)) {
 				int depth = maxDepth(child);
 				if (depth > maxDepth) {
 					maxDepth = depth;

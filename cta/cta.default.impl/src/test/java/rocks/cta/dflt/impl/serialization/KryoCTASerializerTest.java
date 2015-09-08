@@ -10,8 +10,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import rocks.cta.api.core.Trace;
 import rocks.cta.dflt.impl.TraceCreator;
-import rocks.cta.dflt.impl.TraceImpl;
+import rocks.cta.dflt.impl.core.TraceImpl;
+import rocks.cta.dflt.impl.serialization.realizations.KryoCTASerializationBase;
 
 /**
  * JUnit test for trace serialization.
@@ -29,6 +31,7 @@ public class KryoCTASerializerTest {
 	 * SubTrace to test.
 	 */
 	private static TraceImpl mainTrace;
+	private static TraceImpl secondTrace;
 
 	/**
 	 * Initialize SubTrace.
@@ -36,6 +39,7 @@ public class KryoCTASerializerTest {
 	@BeforeClass
 	public static void createSubTrace() {
 		mainTrace = new TraceCreator().createTrace();
+		secondTrace = new TraceImpl(123);
 	}
 
 	/**
@@ -45,19 +49,28 @@ public class KryoCTASerializerTest {
 	 *             if reading from or writing to file fails
 	 */
 	@Test
-	public void testSerializationofTrace() throws FileNotFoundException {
-		KryoCTASerializer writer = new KryoCTASerializer();
-		FileOutputStream fos = new FileOutputStream(SERIALIZATION_FILE);
-		writer.serialize(mainTrace, fos);
-		Assert.assertTrue(new File(SERIALIZATION_FILE).exists());
+	public void testSerializationOfTrace() throws FileNotFoundException {
+		CTASerializer serializer = CTASerializationFactory.getInstance().getSerializer(CTASerializationFormat.BINARY);
+		serializer.prepare(new FileOutputStream(SERIALIZATION_FILE));
+		serializer.writeTrace(mainTrace);
+		serializer.writeTrace(secondTrace);
+		serializer.close();
+		
+		
+		CTADeserializer deserializer = CTASerializationFactory.getInstance().getDeserializer(CTASerializationFormat.BINARY);
+		deserializer.setSource(new FileInputStream(SERIALIZATION_FILE));
+		Trace t1 = deserializer.readNext();
+		Trace t2 = deserializer.readNext();
+		Trace t3 = deserializer.readNext();
+		deserializer.close();
 
-		KryoCTASerializer reader = new KryoCTASerializer();
-		FileInputStream fis = new FileInputStream(SERIALIZATION_FILE);
-		TraceImpl readTrace = reader.deserialize(fis);
-
-		Assert.assertEquals(mainTrace.getLogicalTraceId(),
-				readTrace.getLogicalTraceId());
-		Assert.assertEquals(mainTrace.size(), readTrace.size());
+		Assert.assertEquals(mainTrace.getTraceId(),
+				t1.getTraceId());
+		Assert.assertEquals(mainTrace.size(), t1.size());
+		Assert.assertEquals(secondTrace.getTraceId(),
+				t2.getTraceId());
+		Assert.assertEquals(secondTrace.size(), t2.size());
+		Assert.assertNull(t3);
 	}
 
 	/**

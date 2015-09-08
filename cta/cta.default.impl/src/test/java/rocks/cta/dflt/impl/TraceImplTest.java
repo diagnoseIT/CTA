@@ -5,11 +5,15 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.Trace;
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.MethodInvocation;
+import rocks.cta.api.core.callables.NestingCallable;
+import rocks.cta.api.core.callables.RemoteInvocation;
 import rocks.cta.api.utils.CallableIterator;
 import rocks.cta.api.utils.CallableIteratorOnTrace;
 import rocks.cta.api.utils.SubTraceIterator;
+import rocks.cta.dflt.impl.core.TraceImpl;
 
 /**
  * JUnit test for the {@link TraceImpl} class and corresponding iterators
@@ -38,8 +42,10 @@ public class TraceImplTest {
 	 */
 	@Test
 	public void testTreeStructure() {
+		mainTrace.toString();
+		mainTrace.getRoot().toString();
 		Assert.assertEquals(TraceCreator.SIZE, mainTrace.size());
-		Assert.assertEquals(TraceCreator.SIZE / 2 - 1, mainTrace.getRoot().getRoot().getChildCount());
+		Assert.assertEquals(TraceCreator.SIZE / 2 - 1, ((NestingCallable)mainTrace.getRoot().getRoot()).getChildCount());
 		int i = 1;
 		for (Callable clbl : mainTrace) {
 			if (i <= TraceCreator.IDX_ON_SUBTRACE_INVOCATION || i > TraceCreator.IDX_ON_SUBTRACE_INVOCATION_END) {
@@ -48,10 +54,10 @@ public class TraceImplTest {
 				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl.getContainingSubTrace().getId());
 			}
 			if (i == TraceCreator.IDX_ON_SUBTRACE_INVOCATION) {
-				Assert.assertTrue(clbl.isSubTraceInvocation());
-				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl.getInvokedSubTrace().getId());
+				Assert.assertTrue(clbl instanceof RemoteInvocation);
+				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, ((RemoteInvocation)clbl).getTargetSubTrace().getId());
 			}
-			Assert.assertEquals(TraceCreator.METHOD_PREFIX + i, clbl.getMethodName());
+			Assert.assertEquals(TraceCreator.METHOD_PREFIX + i, ((MethodInvocation)clbl).getMethodName());
 			i++;
 		}
 	}

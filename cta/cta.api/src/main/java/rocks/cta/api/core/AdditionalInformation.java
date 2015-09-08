@@ -1,5 +1,7 @@
 package rocks.cta.api.core;
 
+import rocks.cta.api.core.callables.Callable;
+
 /**
  * This is a super interface for different kind of additional information objects / interfaces to be
  * attached to {@link Callable} instances.

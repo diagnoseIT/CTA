@@ -41,7 +41,9 @@ public class SubTraceIterator implements TreeIterator<SubTrace> {
 	 */
 	public SubTraceIterator(SubTrace root) {
 		List<SubTrace> rootList = new ArrayList<SubTrace>(1);
-		rootList.add(root);
+		if (root != null) {
+			rootList.add(root);
+		}
 		currentIterator = rootList.iterator();
 	}
 

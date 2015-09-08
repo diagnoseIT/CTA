@@ -6,7 +6,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import rocks.cta.api.core.Callable;
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.dflt.impl.core.LocationImpl;
+import rocks.cta.dflt.impl.core.SubTraceImpl;
+import rocks.cta.dflt.impl.core.TraceImpl;
+import rocks.cta.dflt.impl.core.callables.MethodInvocationImpl;
 
 /**
  * JUnit test for the {@link CallableImpl} class.
@@ -14,7 +18,7 @@ import rocks.cta.api.core.Callable;
  * @author Alexander Wert
  *
  */
-public class CallableImplTest {
+public class MethodInvocationImplTest {
 
 	/**
 	 * Array of return types to test against.
@@ -54,7 +58,7 @@ public class CallableImplTest {
 	/**
 	 * Callable instance to test.
 	 */
-	private static Callable callable;
+	private static MethodInvocationImpl methodInvocation;
 
 	/**
 	 * Creates a test callable structure.
@@ -66,19 +70,19 @@ public class CallableImplTest {
 		SubTraceImpl subTrace = new SubTraceImpl(1, null, trace);
 		trace.setRoot(subTrace);
 		subTrace.setLocation(new LocationImpl("localhost", "JVM", "APP", "BT"));
-		CallableImpl c1 = new CallableImpl(null, subTrace);
-		c1.setSignature(RETURN_TYPES[0], PACKAGE_NAMES[0], CLASS_NAMES[0],
+		MethodInvocationImpl m1 = new MethodInvocationImpl(null, subTrace);
+		m1.setSignature(RETURN_TYPES[0], PACKAGE_NAMES[0], CLASS_NAMES[0],
 				METHOD_NAMES[0], Arrays.asList(PARAMETER_TYPES[0]));
-		subTrace.setRoot(c1);
-		CallableImpl c2 = new CallableImpl(c1, subTrace);
-		c2.setSignature(RETURN_TYPES[1], PACKAGE_NAMES[1], CLASS_NAMES[1],
+		subTrace.setRoot(m1);
+		MethodInvocationImpl m2 = new MethodInvocationImpl(m1, subTrace);
+		m2.setSignature(RETURN_TYPES[1], PACKAGE_NAMES[1], CLASS_NAMES[1],
 				METHOD_NAMES[1], Arrays.asList(PARAMETER_TYPES[1]));
-		c2.attachLabel(C2_LABEL);
-		CallableImpl c3 = new CallableImpl(c1, subTrace);
-		c3.setSignature(RETURN_TYPES[2], PACKAGE_NAMES[2], CLASS_NAMES[2],
+		m2.addLabel(C2_LABEL);
+		MethodInvocationImpl m3 = new MethodInvocationImpl(m1, subTrace);
+		m3.setSignature(RETURN_TYPES[2], PACKAGE_NAMES[2], CLASS_NAMES[2],
 				METHOD_NAMES[2], Arrays.asList(PARAMETER_TYPES[2]));
 
-		callable = c1;
+		methodInvocation = m1;
 	}
 
 	/**
@@ -86,21 +90,21 @@ public class CallableImplTest {
 	 */
 	@Test
 	public void testSignature() {
-		Assert.assertEquals(RETURN_TYPES[0], callable.getReturnType());
-		Assert.assertEquals(PACKAGE_NAMES[0], callable.getPackageName());
-		Assert.assertEquals(CLASS_NAMES[0], callable.getClassName());
-		Assert.assertEquals(METHOD_NAMES[0], callable.getMethodName());
-		Assert.assertTrue(callable.getParameterTypes().containsAll(
+		Assert.assertEquals(RETURN_TYPES[0], methodInvocation.getReturnType());
+		Assert.assertEquals(PACKAGE_NAMES[0], methodInvocation.getPackageName());
+		Assert.assertEquals(CLASS_NAMES[0], methodInvocation.getClassName());
+		Assert.assertEquals(METHOD_NAMES[0], methodInvocation.getMethodName());
+		Assert.assertTrue(methodInvocation.getParameterTypes().containsAll(
 				Arrays.asList(PARAMETER_TYPES[0])));
 
-		Callable child = callable.getCallees().get(0);
+		MethodInvocationImpl child = (MethodInvocationImpl) methodInvocation.getCallees().get(0);
 		Assert.assertEquals(RETURN_TYPES[1], child.getReturnType());
 		Assert.assertEquals(PACKAGE_NAMES[1], child.getPackageName());
 		Assert.assertEquals(CLASS_NAMES[1], child.getClassName());
 		Assert.assertEquals(METHOD_NAMES[1], child.getMethodName());
 		Assert.assertTrue(child.getParameterTypes().isEmpty());
 
-		child = callable.getCallees().get(1);
+		child = methodInvocation.getCallees(MethodInvocationImpl.class).get(1);
 		Assert.assertEquals(RETURN_TYPES[2], child.getReturnType());
 		Assert.assertEquals(PACKAGE_NAMES[2], child.getPackageName());
 		Assert.assertEquals(CLASS_NAMES[2], child.getClassName());
@@ -116,7 +120,7 @@ public class CallableImplTest {
 	 */
 	@Test
 	public void testLabels() {
-		Callable child = callable.getCallees().get(0);
+		Callable child = methodInvocation.getCallees().get(0);
 		Assert.assertTrue(child.hasLabel(C2_LABEL));
 		Assert.assertTrue(child.getLabels().size() == 1);
 	}

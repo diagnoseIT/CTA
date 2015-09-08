@@ -1,8 +1,9 @@
-package rocks.cta.dflt.impl;
+package rocks.cta.dflt.impl.core;
 
 import java.io.Serializable;
 
 import rocks.cta.api.core.Location;
+import rocks.cta.api.core.Trace;
 import rocks.cta.api.utils.StringUtils;
 
 /**
@@ -21,27 +22,27 @@ public class LocationImpl implements Location, Serializable {
 	/**
 	 * Identifies the machine.
 	 */
-	private String host = UNKOWN;
+	private String host = Trace.UNKOWN;
 
 	/**
 	 * Identifies the runtime environment (e.g. the JVM).
 	 */
-	private String runTimeEnvironment = UNKOWN;
+	private String runTimeEnvironment = Trace.UNKOWN;
 
 	/**
 	 * Identifies the application.
 	 */
-	private String application = UNKOWN;
+	private String application = Trace.UNKOWN;
 
 	/**
 	 * Identifies the business transaction.
 	 */
-	private String businessTransaction = UNKOWN;
+	private String businessTransaction = Trace.UNKOWN;
 
 	/**
 	 * Identifies the node type.
 	 */
-	private String nodeType = UNKOWN;
+	private String nodeType = Trace.UNKOWN;
 
 	/**
 	 * Default constructor.

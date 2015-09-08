@@ -2,6 +2,8 @@ package rocks.cta.api.core;
 
 import java.util.List;
 
+import rocks.cta.api.core.callables.Callable;
+
 /**
  * A {@link SubTrace} represent an extract of the logical {@link Trace} that is executed within one
  * {@link Location}. Hence, operation executions ({@link Callable} instances) that have different
@@ -27,7 +29,7 @@ public interface SubTrace extends TreeIterable<Callable> {
 
 	/**
 	 * 
-	 * @return the child {@link SubTrace} instances within the composite (i.e. tree) structure of
+	 * @return an <b>unmodifiable list</b> containing the child {@link SubTrace} instances within the composite (i.e. tree) structure of
 	 *         sub traces. Returns an empty list if no sub traces exist.
 	 */
 	List<SubTrace> getSubTraces();

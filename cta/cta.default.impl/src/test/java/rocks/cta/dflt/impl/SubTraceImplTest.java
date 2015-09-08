@@ -5,9 +5,14 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.SubTrace;
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.NestingCallable;
 import rocks.cta.api.utils.CallableIterator;
+import rocks.cta.dflt.impl.core.LocationImpl;
+import rocks.cta.dflt.impl.core.SubTraceImpl;
+import rocks.cta.dflt.impl.core.TraceImpl;
+import rocks.cta.dflt.impl.core.callables.MethodInvocationImpl;
 
 /**
  * JUnit test for {@link SubTraceImpl} and corresponding iterator {@link CallableIterator}.
@@ -62,9 +67,10 @@ public class SubTraceImplTest {
 		TraceImpl trace = new TraceImpl(1);
 
 		SubTraceImpl subTrace = new SubTraceImpl(1, null, trace);
+		subTrace.setLocation(new LocationImpl());
 		trace.setRoot(subTrace);
-
-		CallableImpl rootCallable = createChildNode(null, subTrace, 0);
+		
+		MethodInvocationImpl rootCallable = createChildNode(null, subTrace, 0);
 		subTrace.setRoot(rootCallable);
 		sTrace = subTrace;
 	}
@@ -80,11 +86,11 @@ public class SubTraceImplTest {
 	 *            current depth
 	 * @return created Callable
 	 */
-	private static CallableImpl createChildNode(CallableImpl parent, SubTraceImpl subTrace, int depth) {
+	private static MethodInvocationImpl createChildNode(MethodInvocationImpl parent, SubTraceImpl subTrace, int depth) {
 		if (depth > DEPTH) {
 			return null;
 		}
-		CallableImpl callable = new CallableImpl(parent, subTrace);
+		MethodInvocationImpl callable = new MethodInvocationImpl(parent, subTrace);
 
 		methodCounter++;
 		callable.setSignature(null, "package", "MyClass", METHOD_PREFIX + methodCounter, null);
@@ -101,11 +107,11 @@ public class SubTraceImplTest {
 	@Test
 	public void testSubTreeStructure() {
 		Assert.assertEquals(SIZE, sTrace.size());
-		Assert.assertEquals(SIZE - 1, sTrace.getRoot().getChildCount());
+		Assert.assertEquals(SIZE - 1, ((NestingCallable)sTrace.getRoot()).getChildCount());
 		Assert.assertEquals(DEPTH, sTrace.maxDepth());
 		int i = 1;
 		for (Callable clbl : sTrace) {
-			Assert.assertEquals(METHOD_PREFIX + i, clbl.getMethodName());
+			Assert.assertEquals(METHOD_PREFIX + i, ((MethodInvocationImpl)clbl).getMethodName());
 			i++;
 		}
 	}

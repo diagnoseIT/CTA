@@ -1,10 +1,10 @@
-package rocks.cta.dflt.impl;
+package rocks.cta.dflt.impl.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import rocks.cta.api.core.Callable;
+import rocks.cta.api.core.callables.Callable;
 
 /**
  * The {@link Signature} encapsulates static information on a {@link Callable}.

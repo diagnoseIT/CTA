@@ -3,11 +3,17 @@ package rocks.cta.api.utils;
 import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.Location;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.Trace;
 import rocks.cta.api.core.TreeIterator;
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.DatabaseInvocation;
+import rocks.cta.api.core.callables.ExceptionThrow;
+import rocks.cta.api.core.callables.HTTPRequestProcessing;
+import rocks.cta.api.core.callables.LoggingInvocation;
+import rocks.cta.api.core.callables.MethodInvocation;
+import rocks.cta.api.core.callables.RemoteInvocation;
 
 /**
  * Provides utility functionality related to String representations of CTA elements.
@@ -25,7 +31,7 @@ public final class StringUtils {
 	 * Nano to milli seconds transformer factor.
 	 */
 	private static final double NANOS_TO_MILLIS_FACTOR = 0.000001;
-	
+
 	/**
 	 * Start and end line of a String representation of a {@link SubTrace}.
 	 */
@@ -43,24 +49,122 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Creates a common String representation for the passed {@link Callable} instance.
+	 * Creates a common String representation for the passed {@link MethodInvocation} instance.
 	 * 
-	 * @param callable
-	 *            {@link Callable} instance to provide the String representation for
-	 * @return common string representation for {@link Callable}
+	 * @param methodInvocation
+	 *            {@link MethodInvocation} instance to provide the String representation for
+	 * @return common string representation for {@link MethodInvocation}
 	 */
-	public static String getStringRepresentation(Callable callable) {
+	public static String getStringRepresentation(MethodInvocation methodInvocation) {
 		StringBuilder strBuilder = new StringBuilder();
-		strBuilder.append(callable.getClassName());
+		strBuilder.append(methodInvocation.getClassName());
 		strBuilder.append(".");
-		strBuilder.append(callable.getMethodName());
+		strBuilder.append(methodInvocation.getMethodName());
 		strBuilder.append(" [ ");
-		strBuilder.append(DECIMAL_FORMAT.format(((double) callable.getResponseTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(DECIMAL_FORMAT.format(((double) methodInvocation.getResponseTime()) * NANOS_TO_MILLIS_FACTOR));
 		strBuilder.append(" | ");
-		strBuilder.append(DECIMAL_FORMAT.format(((double) callable.getExecutionTime()) * NANOS_TO_MILLIS_FACTOR));
-		strBuilder.append(" | ");
-		strBuilder.append(DECIMAL_FORMAT.format(((double) callable.getCPUTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(DECIMAL_FORMAT.format(((double) methodInvocation.getExclusiveTime()) * NANOS_TO_MILLIS_FACTOR));
+		if (methodInvocation.getContainingSubTrace().getContainingTrace().hasCPUTimes()) {
+			strBuilder.append(" | ");
+			strBuilder.append(DECIMAL_FORMAT.format(((double) methodInvocation.getCPUTime()) * NANOS_TO_MILLIS_FACTOR));
+		}
 		strBuilder.append(" ]");
+		return strBuilder.toString();
+	}
+
+	/**
+	 * Creates a common String representation for the passed {@link DatabaseInvocation} instance.
+	 * 
+	 * @param dbInvocation
+	 *            {@link DatabaseInvocation} instance to provide the String representation for
+	 * @return common string representation for {@link DatabaseInvocation}
+	 */
+	public static String getStringRepresentation(DatabaseInvocation dbInvocation) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("# SQL (");
+		String sql = dbInvocation.getSQLStatement();
+		strBuilder.append(sql.substring(0, Math.min(20, sql.length())));
+		strBuilder.append(")");
+		strBuilder.append(" [ ");
+		strBuilder.append(DECIMAL_FORMAT.format(((double) dbInvocation.getResponseTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(" | ");
+		strBuilder.append(DECIMAL_FORMAT.format(((double) dbInvocation.getExclusiveTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(" ]");
+		return strBuilder.toString();
+	}
+
+	/**
+	 * Creates a common String representation for the passed {@link DatabaseInvocation} instance.
+	 * 
+	 * @param httpInvocation
+	 *            {@link DatabaseInvocation} instance to provide the String representation for
+	 * @return common string representation for {@link DatabaseInvocation}
+	 */
+	public static String getStringRepresentation(HTTPRequestProcessing httpInvocation) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("# HTTP ");
+		strBuilder.append(httpInvocation.getRequestMethod());
+		strBuilder.append(" (");
+		strBuilder.append(httpInvocation.getUri());
+		strBuilder.append(")");
+		strBuilder.append(" [ ");
+		strBuilder.append(DECIMAL_FORMAT.format(((double) httpInvocation.getResponseTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(" | ");
+		strBuilder.append(DECIMAL_FORMAT.format(((double) httpInvocation.getExclusiveTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(" ]");
+		return strBuilder.toString();
+	}
+
+	/**
+	 * Creates a common String representation for the passed {@link RemoteInvocation} instance.
+	 * 
+	 * @param remoteInvocation
+	 *            {@link RemoteInvocation} instance to provide the String representation for
+	 * @return common string representation for {@link RemoteInvocation}
+	 */
+	public static String getStringRepresentation(RemoteInvocation remoteInvocation) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("# REMOTE ");
+		strBuilder.append(" (");
+		strBuilder.append(remoteInvocation.getTarget());
+		strBuilder.append(")");
+		strBuilder.append(" [ ");
+		strBuilder.append(DECIMAL_FORMAT.format(((double) remoteInvocation.getResponseTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(" | ");
+		strBuilder.append(DECIMAL_FORMAT.format(((double) remoteInvocation.getExclusiveTime()) * NANOS_TO_MILLIS_FACTOR));
+		strBuilder.append(" ]");
+		return strBuilder.toString();
+	}
+
+	/**
+	 * Creates a common String representation for the passed {@link ExceptionThrow} instance.
+	 * 
+	 * @param exceptionThrow
+	 *            {@link ExceptionThrow} instance to provide the String representation for
+	 * @return common string representation for {@link ExceptionThrow}
+	 */
+	public static String getStringRepresentation(ExceptionThrow exceptionThrow) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("# EXCEPTION ");
+		strBuilder.append(" (");
+		strBuilder.append(exceptionThrow.getThrowableType());
+		strBuilder.append(")");
+		return strBuilder.toString();
+	}
+
+	/**
+	 * Creates a common String representation for the passed {@link LoggingInvocation} instance.
+	 * 
+	 * @param loggingInvocation
+	 *            {@link LoggingInvocation} instance to provide the String representation for
+	 * @return common string representation for {@link LoggingInvocation}
+	 */
+	public static String getStringRepresentation(LoggingInvocation loggingInvocation) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("# LOGGING ");
+		strBuilder.append(" (");
+		strBuilder.append(loggingInvocation.getLoggingLevel());
+		strBuilder.append(")");
 		return strBuilder.toString();
 	}
 
@@ -106,7 +210,7 @@ public final class StringUtils {
 				strBuilder.append(System.lineSeparator());
 				break;
 			} else {
-				strBuilder.append(getStringRepresentation(callable));
+				strBuilder.append(callable);
 				strBuilder.append(System.lineSeparator());
 			}
 
@@ -127,7 +231,7 @@ public final class StringUtils {
 	 */
 	public static String getStringRepresentation(Trace trace) {
 		StringBuilder strBuilder = new StringBuilder();
-		String header = " Trace (" + trace.getLogicalTraceId() + ") ";
+		String header = " Trace (" + trace.getTraceId() + ") ";
 		int diff = TRACE_DELIMITER.length() - header.length();
 		String firstLine = TRACE_DELIMITER.substring(0, diff / 2 + 1) + header + TRACE_DELIMITER.substring(0, TRACE_DELIMITER.length() - (diff / 2 + 1 + header.length()));
 		strBuilder.append(firstLine);

@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
-import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.TreeIterator;
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.NestingCallable;
 
 /**
  * Iterator over Callables on a SubTrace.
@@ -40,7 +41,9 @@ public class CallableIterator implements TreeIterator<Callable> {
 	 */
 	public CallableIterator(Callable root) {
 		List<Callable> rootList = new ArrayList<Callable>(1);
-		rootList.add(root);
+		if (root != null) {
+			rootList.add(root);
+		}
 		currentIterator = rootList.iterator();
 	}
 
@@ -60,10 +63,13 @@ public class CallableIterator implements TreeIterator<Callable> {
 
 		Callable tmpCallable = currentIterator.next();
 		currentDepth = iteratorStack.size();
-		List<Callable> callees = tmpCallable.getCallees();
-		if (!callees.isEmpty()) {
-			iteratorStack.push(currentIterator);
-			currentIterator = callees.iterator();
+
+		if (tmpCallable instanceof NestingCallable) {
+			List<Callable> callees = ((NestingCallable) tmpCallable).getCallees();
+			if (!callees.isEmpty()) {
+				iteratorStack.push(currentIterator);
+				currentIterator = callees.iterator();
+			}
 		}
 
 		return tmpCallable;

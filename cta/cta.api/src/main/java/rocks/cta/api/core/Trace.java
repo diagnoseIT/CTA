@@ -1,5 +1,7 @@
 package rocks.cta.api.core;
 
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.MethodInvocation;
 
 /**
  * A {@link Trace} subsumes a logical invocation sequence through the target system potentially
@@ -10,6 +12,20 @@ package rocks.cta.api.core;
  *
  */
 public interface Trace extends TreeIterable<Callable> {
+	/**
+	 * String constant for unknown String properties.
+	 */
+	String UNKOWN = "unknown";
+
+	/**
+	 * Factor to convert nanoseconds to milliseconds.
+	 */
+	double NANOS_TO_MILLIS_FACTOR = 0.000001;
+
+	/**
+	 * Factor to convert milliseconds to nanoseconds.
+	 */
+	long MILLIS_TO_NANOS_FACTOR = 1000000L;
 
 	/**
 	 * 
@@ -29,9 +45,7 @@ public interface Trace extends TreeIterable<Callable> {
 	 * @return the identifier of the entire logical trace (encapsulating all subtraces that belong
 	 *         to the logical trace)
 	 */
-	long getLogicalTraceId();
-
-
+	long getTraceId();
 
 	/**
 	 * 
@@ -39,4 +53,12 @@ public interface Trace extends TreeIterable<Callable> {
 	 *         corresponding {@link Trace}
 	 */
 	int size();
+
+	/**
+	 * Indicates whether CPU time is supported in this trace.
+	 * 
+	 * @return true, if CPU time is provided for all {@link MethodInvocation} instances in this
+	 *         trace.
+	 */
+	boolean hasCPUTimes();
 }

@@ -8,10 +8,7 @@ package rocks.cta.api.core;
  */
 public interface Location {
 
-	/**
-	 * String constant for unknown location properties.
-	 */
-	String UNKOWN = "unknown";
+
 
 	/**
 	 * 

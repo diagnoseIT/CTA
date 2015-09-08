@@ -1,5 +1,14 @@
 package rocks.cta.dflt.impl;
 
+import rocks.cta.dflt.impl.core.LocationImpl;
+import rocks.cta.dflt.impl.core.SubTraceImpl;
+import rocks.cta.dflt.impl.core.TraceImpl;
+import rocks.cta.dflt.impl.core.callables.AbstractCallableImpl;
+import rocks.cta.dflt.impl.core.callables.AbstractNestingCallableImpl;
+import rocks.cta.dflt.impl.core.callables.HTTPRequestProcessingImpl;
+import rocks.cta.dflt.impl.core.callables.MethodInvocationImpl;
+import rocks.cta.dflt.impl.core.callables.RemoteInvocationImpl;
+
 /**
  * Creates a trace instance for testing.
  * 
@@ -42,8 +51,7 @@ public class TraceCreator {
 	/**
 	 * node index indicating the end of the invoked SubTrace.
 	 */
-	protected static final int IDX_ON_SUBTRACE_INVOCATION_END = IDX_ON_SUBTRACE_INVOCATION
-			+ (SIZE / 2);
+	protected static final int IDX_ON_SUBTRACE_INVOCATION_END = IDX_ON_SUBTRACE_INVOCATION + (SIZE / 2);
 
 	/**
 	 * method counter for different method names.
@@ -69,9 +77,10 @@ public class TraceCreator {
 		TraceImpl trace = new TraceImpl(1);
 
 		SubTraceImpl subTrace = new SubTraceImpl(1, null, trace);
+		subTrace.setLocation(new LocationImpl());
 		trace.setRoot(subTrace);
 
-		CallableImpl rootCallable = createChildNode(null, subTrace, trace, 0);
+		AbstractCallableImpl rootCallable = createChildNode(null, subTrace, trace, 0);
 		subTrace.setRoot(rootCallable);
 		return trace;
 	}
@@ -89,32 +98,39 @@ public class TraceCreator {
 	 *            current depth
 	 * @return created Callable
 	 */
-	private CallableImpl createChildNode(CallableImpl parent,
-			SubTraceImpl subTrace, TraceImpl trace, int depth) {
+	private AbstractCallableImpl createChildNode(AbstractNestingCallableImpl parent, SubTraceImpl subTrace, TraceImpl trace, int depth) {
 		if (depth > DEPTH) {
 			return null;
 		}
-		CallableImpl callable = new CallableImpl(parent, subTrace);
 
 		methodCounter++;
-		callable.setSignature(null, "package", "MyClass",
-				"SubTrace Invocation", null);
-		if (methodCounter == IDX_ON_SUBTRACE_INVOCATION) {
+		if (methodCounter == 1) {
+			HTTPRequestProcessingImpl httpCall = new HTTPRequestProcessingImpl(null, subTrace);
+			for (int i = 0; i < WIDTH; i++) {
+				createChildNode(httpCall, subTrace, trace, depth + 1);
+			}
+			return httpCall;
+		} else if (methodCounter == IDX_ON_SUBTRACE_INVOCATION) {
 
-			SubTraceImpl newSubTrace = new SubTraceImpl(INVOKED_SUB_TRACE_ID,
-					subTrace, trace);
+			RemoteInvocationImpl remoteInvocation = new RemoteInvocationImpl(parent, subTrace);
 
-			CallableImpl newRootCallable = createChildNode(null, newSubTrace,
-					trace, 0);
+			SubTraceImpl newSubTrace = new SubTraceImpl(INVOKED_SUB_TRACE_ID, subTrace, trace);
+			newSubTrace.setLocation(new LocationImpl());
+			AbstractCallableImpl newRootCallable = createChildNode(null, newSubTrace, trace, 0);
 			newSubTrace.setRoot(newRootCallable);
-			callable.setIsSubTraceInvocation(true);
-			callable.setInvokedSubTrace(newSubTrace);
-		}
 
-		for (int i = 0; i < WIDTH; i++) {
-			createChildNode(callable, subTrace, trace, depth + 1);
+			remoteInvocation.setTargetSubTrace(newSubTrace);
+			return remoteInvocation;
+		} else {
+			MethodInvocationImpl methodInvocation = new MethodInvocationImpl(parent, subTrace);
+
+			methodInvocation.setSignature(null, "package", "MyClass", "SubTrace Invocation", null);
+
+			for (int i = 0; i < WIDTH; i++) {
+				createChildNode(methodInvocation, subTrace, trace, depth + 1);
+			}
+			return methodInvocation;
 		}
-		return callable;
 
 	}
 }

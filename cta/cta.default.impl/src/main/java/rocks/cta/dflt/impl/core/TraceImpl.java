@@ -1,4 +1,4 @@
-package rocks.cta.dflt.impl;
+package rocks.cta.dflt.impl.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,10 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.Trace;
 import rocks.cta.api.core.TreeIterator;
+import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.utils.CallableIteratorOnTrace;
 import rocks.cta.api.utils.StringUtils;
 import rocks.cta.api.utils.SubTraceIterator;
@@ -55,6 +55,11 @@ public class TraceImpl implements Trace, Serializable {
 	private transient int size = -1;
 
 	/**
+	 * Indicates whether CPU times are supported in this trace.
+	 */
+	private boolean cpuTimesSupported;
+
+	/**
 	 * Default constructor.
 	 */
 	public TraceImpl() {
@@ -96,7 +101,7 @@ public class TraceImpl implements Trace, Serializable {
 	}
 
 	@Override
-	public long getLogicalTraceId() {
+	public long getTraceId() {
 		return traceId;
 	}
 
@@ -122,7 +127,7 @@ public class TraceImpl implements Trace, Serializable {
 	 *            id for which to retrieve the signature.
 	 * @return Signature object for the passed id
 	 */
-	protected Signature getSignature(int signatureId) {
+	public Signature getSignature(int signatureId) {
 		if (containedSignatures == null) {
 			return null;
 		}
@@ -144,7 +149,7 @@ public class TraceImpl implements Trace, Serializable {
 	 *            list of parameter types
 	 * @return id of the registered signature
 	 */
-	protected int registerSignature(String returnType, String packageName, String className, String methodName, List<String> parameterTypes) {
+	public int registerSignature(String returnType, String packageName, String className, String methodName, List<String> parameterTypes) {
 		int methodNameId = registerStringConstant(methodName);
 		int packageNameId = registerStringConstant(packageName);
 		int classNameId = registerStringConstant(className);
@@ -180,7 +185,7 @@ public class TraceImpl implements Trace, Serializable {
 	 *            id for which to retrieve the String constant.
 	 * @return String constant for the passed id
 	 */
-	protected String getStringConstant(int stringConstantId) {
+	public String getStringConstant(int stringConstantId) {
 		if (stringConstantsRegistry == null) {
 			return null;
 		}
@@ -194,7 +199,7 @@ public class TraceImpl implements Trace, Serializable {
 	 *            stringConstant to register
 	 * @return identifier of the registered String constant
 	 */
-	protected int registerStringConstant(String stringConstant) {
+	public int registerStringConstant(String stringConstant) {
 		if (stringConstantsRegistry == null) {
 			stringConstantsRegistry = new HashMap<Integer, String>();
 		}
@@ -208,6 +213,15 @@ public class TraceImpl implements Trace, Serializable {
 	@Override
 	public String toString() {
 		return StringUtils.getStringRepresentation(this);
+	}
+
+	@Override
+	public boolean hasCPUTimes() {
+		return cpuTimesSupported;
+	}
+
+	public void setCPUTimesSupported(boolean supported) {
+		cpuTimesSupported = supported;
 	}
 
 }

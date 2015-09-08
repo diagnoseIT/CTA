@@ -1,12 +1,14 @@
 package rocks.cta.api.utils;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
-import rocks.cta.api.core.Callable;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.TreeIterator;
+import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.RemoteInvocation;
 
 /**
  * Iterator over Callables on a Trace.
@@ -38,12 +40,15 @@ public class CallableIteratorOnTrace implements TreeIterator<Callable> {
 	 *            root node in the SubTrace tree
 	 */
 	public CallableIteratorOnTrace(SubTrace root) {
-		currentIterator = new CallableIterator(root.getRoot());
+		if (root == null) {
+			currentIterator = Collections.<Callable>emptyList().iterator();
+		} else {
+			currentIterator = new CallableIterator(root.getRoot());
+		}
 	}
 
 	@Override
 	public boolean hasNext() {
-
 		while (!currentIterator.hasNext() && !iteratorStack.isEmpty()) {
 			currentIterator = iteratorStack.pop();
 			stackedDepth -= (((CallableIterator) currentIterator).currentDepth() + 1);
@@ -64,11 +69,11 @@ public class CallableIteratorOnTrace implements TreeIterator<Callable> {
 
 		Callable tmpCallable = currentIterator.next();
 
-		if (tmpCallable.isSubTraceInvocation()) {
+		if (tmpCallable instanceof RemoteInvocation && ((RemoteInvocation) tmpCallable).hasTargetSubTrace()) {
 			stackedDepth += ((CallableIterator) currentIterator).currentDepth() + 1;
 			iteratorStack.push(currentIterator);
 
-			currentIterator = new CallableIterator(tmpCallable.getInvokedSubTrace().getRoot());
+			currentIterator = new CallableIterator(((RemoteInvocation) tmpCallable).getTargetSubTrace().getRoot());
 			tmpCallable = currentIterator.next();
 		}
 
