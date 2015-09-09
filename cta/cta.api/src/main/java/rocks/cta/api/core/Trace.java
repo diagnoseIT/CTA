@@ -11,7 +11,7 @@ import rocks.cta.api.core.callables.MethodInvocation;
  * @author Alexander Wert
  *
  */
-public interface Trace extends TreeIterable<Callable> {
+public interface Trace extends TimedElement, TreeIterable<Callable> {
 	/**
 	 * String constant for unknown String properties.
 	 */

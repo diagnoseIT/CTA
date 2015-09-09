@@ -201,7 +201,8 @@ public class DefaultCTATransformer {
 		dfltHTTPRequest.setHTTPParameters(httpRequest.getHTTPParameters());
 		dfltHTTPRequest.setHTTPAttributes(httpRequest.getHTTPAttributes());
 		dfltHTTPRequest.setHTTPSessionAttributes(httpRequest.getHTTPSessionAttributes());
-
+		dfltHTTPRequest.setHTTPHeaders(httpRequest.getHTTPHeaders());
+		
 		transformTimedCallableInfo(httpRequest, dfltHTTPRequest);
 		transformCallableInfo(httpRequest, dfltHTTPRequest);
 		return dfltHTTPRequest;

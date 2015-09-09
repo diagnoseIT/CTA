@@ -44,6 +44,13 @@ public interface HTTPRequestProcessing extends NestingCallable {
 	Map<String, String> getHTTPSessionAttributes();
 
 	/**
+	 * Returns a Map of HTTP headers. 
+	 * 
+	 * @return an <b>unmodifiable map</b> of HTTP headers
+	 */
+	Map<String, String> getHTTPHeaders();
+	
+	/**
 	 * Enumeration of possible HTTP methods.
 	 * 
 	 * @author Alexander Wert

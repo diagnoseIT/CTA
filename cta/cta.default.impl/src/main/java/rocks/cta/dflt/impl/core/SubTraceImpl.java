@@ -253,4 +253,22 @@ public class SubTraceImpl implements SubTrace, Serializable {
 		return true;
 	}
 
+	@Override
+	public long getExclusiveTime() {
+		long exclTime = getResponseTime();
+		for (SubTrace child : getSubTraces()) {
+			exclTime -= child.getResponseTime();
+		}
+		return exclTime;
+	}
+
+	@Override
+	public long getResponseTime() {
+		if (root instanceof NestingCallable) {
+			return ((NestingCallable) root).getResponseTime();
+		} else {
+			return 0;
+		}
+	}
+
 }

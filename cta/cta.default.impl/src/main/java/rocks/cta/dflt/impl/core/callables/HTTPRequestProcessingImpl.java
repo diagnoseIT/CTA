@@ -48,6 +48,11 @@ public class HTTPRequestProcessingImpl extends AbstractNestingCallableImpl imple
 	private Map<String, String> sessionAttributes;
 
 	/**
+	 * HTTP headers.
+	 */
+	private Map<String, String> headers;
+
+	/**
 	 * Default constructor for serialization. This constructor should not be used except for
 	 * deserialization.
 	 */
@@ -101,6 +106,11 @@ public class HTTPRequestProcessingImpl extends AbstractNestingCallableImpl imple
 		return Collections.unmodifiableMap(sessionAttributes);
 	}
 
+	@Override
+	public Map<String, String> getHTTPHeaders() {
+		return headers;
+	}
+
 	/**
 	 * @param parameters
 	 *            the parameters to set
@@ -126,6 +136,14 @@ public class HTTPRequestProcessingImpl extends AbstractNestingCallableImpl imple
 	}
 
 	/**
+	 * @param headers
+	 *            the headers to set
+	 */
+	public void setHTTPHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
+
+	/**
 	 * @param uri
 	 *            the uri to set
 	 */
@@ -145,4 +163,5 @@ public class HTTPRequestProcessingImpl extends AbstractNestingCallableImpl imple
 	public String toString() {
 		return StringUtils.getStringRepresentation(this);
 	}
+
 }

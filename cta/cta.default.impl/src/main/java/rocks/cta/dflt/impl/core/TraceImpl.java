@@ -224,4 +224,18 @@ public class TraceImpl implements Trace, Serializable {
 		cpuTimesSupported = supported;
 	}
 
+	@Override
+	public long getExclusiveTime() {
+		return getResponseTime();
+	}
+
+	@Override
+	public long getResponseTime() {
+		if (rootSubTrace == null) {
+			return 0;
+		} else {
+			return rootSubTrace.getResponseTime();
+		}
+	}
+
 }

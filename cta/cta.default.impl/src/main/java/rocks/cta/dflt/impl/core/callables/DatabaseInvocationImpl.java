@@ -192,4 +192,6 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	public String toString() {
 		return StringUtils.getStringRepresentation(this);
 	}
+	
+	
 }
