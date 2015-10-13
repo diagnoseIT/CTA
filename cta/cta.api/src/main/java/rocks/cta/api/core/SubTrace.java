@@ -1,7 +1,6 @@
 package rocks.cta.api.core;
 
 import java.util.List;
-import java.util.Optional;
 
 import rocks.cta.api.core.callables.Callable;
 
@@ -13,7 +12,7 @@ import rocks.cta.api.core.callables.Callable;
  * @author Alexander Wert
  *
  */
-public interface SubTrace extends TimedElement, TreeIterable<Callable> {
+public interface SubTrace extends TimedElement, TreeIterable<Callable>, Identifiable {
 	/**
 	 * 
 	 * @return the root {@link Callable} of the {@link SubTrace} (i.e. operation that represents the

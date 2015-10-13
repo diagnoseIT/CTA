@@ -19,7 +19,7 @@ import rocks.cta.api.utils.SubTraceIterator;
  * @author Alexander Wert
  *
  */
-public class TraceImpl implements Trace, Serializable {
+public class TraceImpl extends AbstractIdentifiableImpl implements Trace, Serializable {
 
 	/**
 	 * 

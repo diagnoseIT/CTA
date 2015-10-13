@@ -12,6 +12,7 @@ import rocks.cta.api.core.AdditionalInformation;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.NestingCallable;
+import rocks.cta.dflt.impl.core.AbstractIdentifiableImpl;
 import rocks.cta.dflt.impl.core.SubTraceImpl;
 import rocks.cta.dflt.impl.core.TraceImpl;
 
@@ -21,7 +22,7 @@ import rocks.cta.dflt.impl.core.TraceImpl;
  * @author Alexander Wert, Christoph Heger
  *
  */
-public abstract class AbstractCallableImpl implements Callable, Serializable {
+public abstract class AbstractCallableImpl extends AbstractIdentifiableImpl implements Callable, Serializable {
 
 	/**
 	 * 

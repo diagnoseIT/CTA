@@ -21,7 +21,7 @@ import rocks.cta.dflt.impl.core.callables.AbstractCallableImpl;
  * @author Alexander Wert, Christoph Heger
  *
  */
-public class SubTraceImpl implements SubTrace, Serializable {
+public class SubTraceImpl extends AbstractIdentifiableImpl implements SubTrace, Serializable {
 
 	/**
 	 * 

@@ -10,7 +10,7 @@ import rocks.cta.api.core.callables.Callable;
  * @author Alexander Wert, Christoph Heger
  *
  */
-public interface Trace extends TimedElement, TreeIterable<Callable> {
+public interface Trace extends TimedElement, TreeIterable<Callable>, Identifiable {
 
 	/**
 	 * Factor to convert nanoseconds to milliseconds.

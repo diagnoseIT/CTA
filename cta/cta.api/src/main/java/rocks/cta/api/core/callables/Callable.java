@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import rocks.cta.api.core.AdditionalInformation;
+import rocks.cta.api.core.Identifiable;
 import rocks.cta.api.core.SubTrace;
 
 /**
@@ -16,7 +17,7 @@ import rocks.cta.api.core.SubTrace;
  *
  */
 
-public interface Callable {
+public interface Callable extends Identifiable {
 	/**
 	 * Returns the parent {@link NestingCallable} of the current {@link Callable} within the tree
 	 * structure of the corresponding {@link SubTrace}.
