@@ -93,6 +93,10 @@ public interface HTTPRequestProcessing extends NestingCallable {
 		/**
 		 * HTTP PATCH.
 		 */
-		PATCH
+		PATCH,
+		/**
+		 * UNKNOWN.
+		 */
+		UNKNOWN
 	}
 }

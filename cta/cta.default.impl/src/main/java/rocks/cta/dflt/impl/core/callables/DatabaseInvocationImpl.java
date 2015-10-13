@@ -194,7 +194,7 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 
 	@Override
 	public Optional<String> getUnboundSQLStatement() {
-		return sql.contains("?") == true ? Optional.ofNullable(sql) : Optional.empty();
+		return sql.contains("?") ? Optional.ofNullable(sql) : Optional.empty();
 	}
 	
 	

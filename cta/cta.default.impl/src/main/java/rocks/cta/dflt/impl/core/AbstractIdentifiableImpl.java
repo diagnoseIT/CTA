@@ -6,7 +6,7 @@ import java.util.Optional;
 import rocks.cta.api.core.Identifiable;
 
 /**
- * Default implementation of the {@link Identifiable} interface of the CTA
+ * Default implementation of the {@link Identifiable} interface of the CTA.
  * 
  * @author Christoph Heger
  *
@@ -18,7 +18,7 @@ public abstract class AbstractIdentifiableImpl implements Identifiable, Serializ
 	 */
 	private static final long serialVersionUID = 5844714352437823529L;
 	/**
-	 * The identifier
+	 * The identifier.
 	 */
 	private Object identifier;
 

@@ -24,7 +24,7 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	 * 
 	 */
 	private static final long serialVersionUID = 4548591658615282164L;
-	
+
 	/**
 	 * Constructor name pattern.
 	 */
@@ -76,7 +76,7 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	 * Parameter types identifiers to retrieve the signature from registry.
 	 */
 	private List<Integer> parameterTypeIds;
-	
+
 	/**
 	 * Default constructor for serialization. This constructor should not be
 	 * used except for deserialization.
@@ -119,11 +119,11 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 			long tmpExclusiveCPUTime = cpuTime.get();
 
 			for (MethodInvocation child : getCallees(MethodInvocation.class)) {
-				tmpExclusiveCPUTime -= child.getCPUTime().orElse((long)0);
+				tmpExclusiveCPUTime -= child.getCPUTime().orElse((long) 0);
 			}
-			
+
 			exclusiveCPUTime = Optional.of(tmpExclusiveCPUTime);
-			
+
 			return exclusiveCPUTime;
 		} else {
 			return Optional.empty();
@@ -133,23 +133,15 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	@Override
 	public String getSignature() {
 		return resolveStringId(signatureId);
-//		return resolveSignature().toString();
 	}
 
 	/**
-	 * Resolves the Signature object from the repository in the corresponding
-	 * Trace object.
+	 * Resolves the string for the given id from registry.
 	 * 
-	 * @return returns the Signature object for this Callable
+	 * @param id
+	 *            identifier of the string
+	 * @return {@link String} for the given identifier
 	 */
-//	private String resolveSignature() {
-//		String signature = ((TraceImpl) containingSubTrace.getContainingTrace()).getSignature(signatureId);
-//		if (signature == null) {
-//			throw new IllegalStateException("Signature has not been specified, yet!");
-//		}
-//		return signature;
-//	}
-	
 	private String resolveStringId(int id) {
 		String s = ((TraceImpl) containingSubTrace.getContainingTrace()).getStringConstant(id);
 		if (s == null) {
@@ -161,43 +153,63 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	/**
 	 * Sets the signature of this Callable.
 	 * 
-	 * @param returnType
-	 *            full qualified name of the return type
-	 * @param packageName
-	 *            full package name
-	 * @param className
-	 *            simple class name
-	 * @param methodName
-	 *            simple method name
-	 * @param parameterTypes
-	 *            list of full qualified parameter types
+	 * @param signature
+	 *            full signature
 	 */
-	public void setSignature(String name) {
-//		public void setSignature(String returnType, String packageName, String className, String methodName,
-//				List<String> parameterTypes) {
-//		signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerSignature(returnType,
-//				packageName, className, methodName, parameterTypes);
-			signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
+	public void setSignature(String signature) {
+		signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(signature);
 	}
-	
+
+	/**
+	 * Sets the method name of the signature of this Callable.
+	 * 
+	 * @param name
+	 *            simple method name
+	 */
 	public void setMethodName(String name) {
 		methodId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
 	}
-	
+
+	/**
+	 * Sets the class name of the signature of this Callable.
+	 * 
+	 * @param name
+	 *            simple class name
+	 */
 	public void setClassName(String name) {
 		classId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
 	}
-	
+
+	/**
+	 * Sets the package name of the signature of this Callable.
+	 * 
+	 * @param name
+	 *            package name
+	 */
 	public void setPackageName(String name) {
 		packageId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
 	}
 
+	/**
+	 * Sets the return type of the signature of this Callable.
+	 * 
+	 * @param name
+	 *            return type
+	 */
 	public void setReturnType(String name) {
 		returnTypeId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
 	}
-	
+
+	/**
+	 * Sets the list of parameter types of the signature of this Callable.
+	 * 
+	 * @param types
+	 *            list of parameter types
+	 */
 	public void setParameterTypes(List<String> types) {
-		parameterTypeIds = types.stream().map(type -> ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(type)).collect(Collectors.toList());
+		parameterTypeIds = types.stream()
+				.map(type -> ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(type))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -250,7 +262,7 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 
 	@Override
 	public Optional<Boolean> isConstructor() {
-		return getMethodName().map(name -> name.equalsIgnoreCase(CONSTRUCTOR_PATTERN));		
+		return getMethodName().map(name -> name.equalsIgnoreCase(CONSTRUCTOR_PATTERN));
 	}
 
 	@Override

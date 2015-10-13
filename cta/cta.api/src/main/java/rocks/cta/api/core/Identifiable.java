@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface Identifiable {
 
 	/**
-	 * Provides the unique identifier
+	 * Provides the unique identifier.
 	 * 
 	 * @return an {@link Optional} with the identifier as value or an empty
 	 *         {@link Optional} when not present.
@@ -19,9 +19,9 @@ public interface Identifiable {
 	Optional<Object> getIdentifier();
 
 	/**
-	 * Set the unique identifier
+	 * Set the unique identifier.
 	 * 
-	 * @param identifier to set
+	 * @param id identifier to set.
 	 */
 	void setIdentifier(Object id);
 }
