@@ -1,15 +1,15 @@
 package rocks.cta.dflt.impl.core.callables;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.MethodInvocation;
 import rocks.cta.api.utils.StringUtils;
-import rocks.cta.dflt.impl.core.Signature;
 import rocks.cta.dflt.impl.core.SubTraceImpl;
 import rocks.cta.dflt.impl.core.TraceImpl;
 
@@ -24,6 +24,11 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	 * 
 	 */
 	private static final long serialVersionUID = 4548591658615282164L;
+	
+	/**
+	 * Constructor name pattern.
+	 */
+	private static final String CONSTRUCTOR_PATTERN = "<init>";
 
 	/**
 	 * Signature identifier to retrieve the signature from registry.
@@ -31,32 +36,57 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	private int signatureId;
 
 	/**
+	 * Method identifier to retrieve the signature from registry.
+	 */
+	private int methodId;
+
+	/**
 	 * CPU time consumed by this {@link MethodInvocation} instance.
 	 */
-	private long cpuTime = -1;
+	private Optional<Long> cpuTime = Optional.empty();
 
 	/**
 	 * Exclusive CPU time [nanoseconds].
 	 */
-	private transient long exclusiveCPUTime = -1;
+	private transient Optional<Long> exclusiveCPUTime = Optional.empty();
 
 	/**
-	 * Holds the parameter values, if any available. Key is the index of the corresponding parameter
-	 * in the method signature. Value is the string representaiton of the parameter value.
+	 * Holds the parameter values, if any available. Key is the index of the
+	 * corresponding parameter in the method signature. Value is the string
+	 * representaiton of the parameter value.
 	 */
-	private Map<Integer, String> parameterValues;
+	private Optional<Map<Integer, String>> parameterValues = Optional.empty();
 
+	/**
+	 * Class identifier to retrieve the signature from registry.
+	 */
+	private int classId;
+
+	/**
+	 * Package identifier to retrieve the signature from registry.
+	 */
+	private int packageId;
+
+	/**
+	 * Return type identifier to retrieve the signature from registry.
+	 */
+	private int returnTypeId;
+
+	/**
+	 * Parameter types identifiers to retrieve the signature from registry.
+	 */
+	private List<Integer> parameterTypeIds;
 	
 	/**
-	 * Default constructor for serialization. This constructor should not be used except for
-	 * deserialization.
+	 * Default constructor for serialization. This constructor should not be
+	 * used except for deserialization.
 	 */
 	public MethodInvocationImpl() {
 	}
 
 	/**
-	 * Constructor. Adds the newly created {@link Callable} instance to the passed parent if the
-	 * parent is not null!
+	 * Constructor. Adds the newly created {@link Callable} instance to the
+	 * passed parent if the parent is not null!
 	 * 
 	 * @param parent
 	 *            {@link AbstractNestingCallableImpl} that called this Callable
@@ -68,7 +98,7 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	}
 
 	@Override
-	public long getCPUTime() {
+	public Optional<Long> getCPUTime() {
 		return cpuTime;
 	}
 
@@ -78,39 +108,54 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	 * @param cpuTime
 	 *            CPU time in [nanoseconds]
 	 */
-	public void setCPUTime(long cpuTime) {
+	public void setCPUTime(Optional<Long> cpuTime) {
 		this.cpuTime = cpuTime;
 	}
 
 	@Override
-	public long getExclusiveCPUTime() {
-		if (exclusiveCPUTime < 0) {
-			exclusiveCPUTime = cpuTime;
+	public Optional<Long> getExclusiveCPUTime() {
+
+		if (!exclusiveCPUTime.isPresent() && cpuTime.isPresent()) {
+			long tmpExclusiveCPUTime = cpuTime.get();
 
 			for (MethodInvocation child : getCallees(MethodInvocation.class)) {
-				exclusiveCPUTime -= child.getCPUTime();
+				tmpExclusiveCPUTime -= child.getCPUTime().orElse((long)0);
 			}
+			
+			exclusiveCPUTime = Optional.of(tmpExclusiveCPUTime);
+			
+			return exclusiveCPUTime;
+		} else {
+			return Optional.empty();
 		}
-
-		return exclusiveCPUTime;
 	}
 
 	@Override
 	public String getSignature() {
-		return resolveSignature().toString();
+		return resolveStringId(signatureId);
+//		return resolveSignature().toString();
 	}
 
 	/**
-	 * Resolves the Signature object from the repository in the corresponding Trace object.
+	 * Resolves the Signature object from the repository in the corresponding
+	 * Trace object.
 	 * 
 	 * @return returns the Signature object for this Callable
 	 */
-	private Signature resolveSignature() {
-		Signature signature = ((TraceImpl) containingSubTrace.getContainingTrace()).getSignature(signatureId);
-		if (signature == null) {
+//	private String resolveSignature() {
+//		String signature = ((TraceImpl) containingSubTrace.getContainingTrace()).getSignature(signatureId);
+//		if (signature == null) {
+//			throw new IllegalStateException("Signature has not been specified, yet!");
+//		}
+//		return signature;
+//	}
+	
+	private String resolveStringId(int id) {
+		String s = ((TraceImpl) containingSubTrace.getContainingTrace()).getStringConstant(id);
+		if (s == null) {
 			throw new IllegalStateException("Signature has not been specified, yet!");
 		}
-		return signature;
+		return s;
 	}
 
 	/**
@@ -127,40 +172,56 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	 * @param parameterTypes
 	 *            list of full qualified parameter types
 	 */
-	public void setSignature(String returnType, String packageName, String className, String methodName, List<String> parameterTypes) {
-		signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerSignature(returnType, packageName, className, methodName, parameterTypes);
+	public void setSignature(String name) {
+//		public void setSignature(String returnType, String packageName, String className, String methodName,
+//				List<String> parameterTypes) {
+//		signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerSignature(returnType,
+//				packageName, className, methodName, parameterTypes);
+			signatureId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
+	}
+	
+	public void setMethodName(String name) {
+		methodId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
+	}
+	
+	public void setClassName(String name) {
+		classId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
+	}
+	
+	public void setPackageName(String name) {
+		packageId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
+	}
+
+	public void setReturnType(String name) {
+		returnTypeId = ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(name);
+	}
+	
+	public void setParameterTypes(List<String> types) {
+		parameterTypeIds = types.stream().map(type -> ((TraceImpl) getContainingSubTrace().getContainingTrace()).registerStringConstant(type)).collect(Collectors.toList());
 	}
 
 	@Override
-	public String getMethodName() {
-		return resolveSignature().getMethodName();
+	public Optional<String> getMethodName() {
+		return Optional.ofNullable(resolveStringId(methodId));
 	}
 
 	@Override
-	public String getClassName() {
-		return resolveSignature().getClassName();
+	public Optional<String> getClassName() {
+		return Optional.ofNullable(resolveStringId(classId));
 	}
 
 	@Override
-	public String getPackageName() {
-		return resolveSignature().getPackageName();
+	public Optional<String> getPackageName() {
+		return Optional.ofNullable(resolveStringId(packageId));
 	}
 
 	@Override
-	public List<String> getParameterTypes() {
-		return resolveSignature().getParameterTypes();
+	public Optional<List<String>> getParameterTypes() {
+		return Optional.ofNullable(parameterTypeIds.stream().map(x -> resolveStringId(x)).collect(Collectors.toList()));
 	}
 
 	@Override
-	public boolean hasParameterValues() {
-		return parameterValues != null;
-	}
-
-	@Override
-	public Map<Integer, String> getParameterValues() {
-		if (parameterValues == null) {
-			return Collections.emptyMap();
-		}
+	public Optional<Map<Integer, String>> getParameterValues() {
 		return parameterValues;
 	}
 
@@ -168,27 +229,30 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	 * Adds a parameter value.
 	 * 
 	 * @param parameterIndex
-	 *            index of the corresponding parameter in the method signature (first parameter has an index of 1)
+	 *            index of the corresponding parameter in the method signature
+	 *            (first parameter has an index of 1)
 	 * @param value
 	 *            String representation of the parameter value
 	 */
 	public void addParameterValue(int parameterIndex, String value) {
-		if (parameterValues == null) {
-			parameterValues = new HashMap<Integer, String>();
+		if (!parameterValues.isPresent()) {
+			parameterValues = Optional.of(new HashMap<Integer, String>());
 		}
-		parameterValues.put(parameterIndex, value);
+
+		parameterValues.map(p -> p.put(parameterIndex, value));
+
 	}
 
 	@Override
-	public String getReturnType() {
-		return resolveSignature().getReturnType();
+	public Optional<String> getReturnType() {
+		return Optional.ofNullable(resolveStringId(returnTypeId));
 	}
 
 	@Override
-	public boolean isConstructor() {
-		return resolveSignature().isConstructor();
+	public Optional<Boolean> isConstructor() {
+		return getMethodName().map(name -> name.equalsIgnoreCase(CONSTRUCTOR_PATTERN));		
 	}
-	
+
 	@Override
 	public String toString() {
 		return StringUtils.getStringRepresentation(this);

@@ -1,6 +1,7 @@
 package rocks.cta.dflt.impl.core.callables;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.LoggingInvocation;
@@ -10,7 +11,7 @@ import rocks.cta.dflt.impl.core.SubTraceImpl;
 /**
  * Default implementation of the {@link LoggingInvocation} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public class LoggingInvocationImpl extends AbstractCallableImpl implements LoggingInvocation, Serializable {
@@ -51,8 +52,8 @@ public class LoggingInvocationImpl extends AbstractCallableImpl implements Loggi
 	}
 
 	@Override
-	public String getLoggingLevel() {
-		return loggingLevel;
+	public Optional<String> getLoggingLevel() {
+		return Optional.ofNullable(loggingLevel);
 	}
 
 	@Override

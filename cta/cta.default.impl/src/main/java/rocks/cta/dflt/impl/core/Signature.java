@@ -1,13 +1,13 @@
 package rocks.cta.dflt.impl.core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import rocks.cta.api.core.callables.Callable;
 
 /**
- * The {@link Signature} encapsulates static information on a {@link Callable}.
+ * The {@link String} encapsulates static information on a {@link Callable}.
  * 
  * @author Alexander Wert
  *
@@ -52,7 +52,7 @@ public class Signature implements Serializable {
 	/**
 	 * Full qualified parameter type.
 	 */
-	private int returnTypeId;
+	private Integer returnTypeId;
 
 	/**
 	 * The trace instance this signature belongs to.
@@ -112,10 +112,13 @@ public class Signature implements Serializable {
 	 * @return list of full qualified parameter types
 	 */
 	public List<String> getParameterTypes() {
-		List<String> pTypes = new ArrayList<String>();
-		for (int id : parameterTypeIds) {
-			pTypes.add(trace.getStringConstant(id));
-		}
+//		List<String> pTypes = new ArrayList<String>();
+//		for (int id : parameterTypeIds) {
+//			pTypes.add(trace.getStringConstant(id));
+//		}
+		
+		List<String> pTypes = parameterTypeIds.stream().map(id -> trace.getStringConstant(id)).collect(Collectors.toList());
+		
 		return pTypes;
 	}
 

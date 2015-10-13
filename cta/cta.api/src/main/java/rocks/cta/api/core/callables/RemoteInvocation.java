@@ -1,5 +1,7 @@
 package rocks.cta.api.core.callables;
 
+import java.util.Optional;
+
 import rocks.cta.api.core.Location;
 import rocks.cta.api.core.SubTrace;
 
@@ -7,32 +9,24 @@ import rocks.cta.api.core.SubTrace;
  * A {@link RemoteInvocation} is a representation of a call to another system. A
  * {@link RemoteInvocation} may be linked to another {@link SubTrace} instance.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public interface RemoteInvocation extends TimedCallable {
 	/**
 	 * Returns the invoked target trace if a corresponding {@link SubTrace} instance exists.
 	 * 
-	 * @return the invoked target trace, or <code>null</code> if a corresponding {@link SubTrace}
+	 * @return an {@link Optional} with the invoked target trace as value, an empty {@link Optional} if a corresponding {@link SubTrace}
 	 *         instance does not exist.
 	 */
-	SubTrace getTargetSubTrace();
-
-	/**
-	 * Indicates whether this {@link RemoteInvocation} instance is linked to another
-	 * {@link SubTrace} instance.
-	 * 
-	 * @return true, if a corresponding {@link SubTrace} instance exists, otherwise false.
-	 */
-	boolean hasTargetSubTrace();
+	Optional<SubTrace> getTargetSubTrace();
 
 	/**
 	 * 
-	 * @return the Location of the target remote system. If a corresponding {@link SubTrace}
-	 *         instance does not exist, this method returns <code>null</code>.
+	 * @return an {@link Optional} with the Location of the target remote system as value. If a corresponding {@link SubTrace}
+	 *         instance does not exist, this method returns an empty {@link Optional}.
 	 */
-	Location getTargetLocation();
+	Optional<Location> getTargetLocation();
 
 	/**
 	 * 

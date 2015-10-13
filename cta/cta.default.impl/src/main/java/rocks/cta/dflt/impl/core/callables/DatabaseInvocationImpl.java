@@ -1,9 +1,9 @@
 package rocks.cta.dflt.impl.core.callables;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.DatabaseInvocation;
@@ -13,7 +13,7 @@ import rocks.cta.dflt.impl.core.SubTraceImpl;
 /**
  * Default implementation of the {@link DatabaseInvocation} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements DatabaseInvocation, Serializable {
@@ -36,27 +36,27 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	/**
 	 * Parameter-bound SQL statement.
 	 */
-	private transient String boundSQL;
+	private transient Optional<String> boundSQL;
 
 	/**
 	 * DBMS product name.
 	 */
-	private String dbProductName;
+	private Optional<String> dbProductName;
 
 	/**
 	 * DBMS product version.
 	 */
-	private String dbProductVersion;
+	private Optional<String> dbProductVersion;
 
 	/**
 	 * DB URL.
 	 */
-	private String dbUrl;
+	private Optional<String> dbUrl;
 
 	/**
 	 * parameter bindings.
 	 */
-	private Map<Integer, String> parameterBindings;
+	private Optional<Map<Integer, String>> parameterBindings;
 
 	/**
 	 * Default constructor for serialization. This constructor should not be used except for
@@ -80,8 +80,8 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	}
 
 	@Override
-	public boolean isPrepared() {
-		return prepared;
+	public Optional<Boolean> isPrepared() {
+		return Optional.ofNullable(prepared);
 	}
 
 	/**
@@ -102,30 +102,29 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	}
 
 	@Override
-	public String getBoundSQLStatement() {
-		if (!isPrepared()) {
-			return sql;
-		} else if (boundSQL == null) {
-			boundSQL = sql;
+	public Optional<String> getBoundSQLStatement() {
+		
+		if (!isPrepared().orElse(false)) {
+			return Optional.ofNullable(sql);
+		} else if (!boundSQL.isPresent() && parameterBindings.isPresent()) {
+			String tmpBoundSQL = sql;
 			int count = 1;
-			while (boundSQL.contains("?")) {
-				if (!parameterBindings.containsKey(count)) {
+			while (tmpBoundSQL.contains("?")) {
+				if (!parameterBindings.get().containsKey(count)) {
 					throw new IllegalStateException("Invalid amount of paraemter bindings for SQL statement.");
 				}
-				String value = parameterBindings.get(count);
-				boundSQL = boundSQL.replaceFirst("\\?", value);
+				String value = parameterBindings.get().get(count);
+				tmpBoundSQL = tmpBoundSQL.replaceFirst("\\?", value);
 				count++;
 			}
+			boundSQL = Optional.of(tmpBoundSQL);
 		}
 		return boundSQL;
 	}
 
 	@Override
-	public Map<Integer, String> getParameterBindings() {
-		if (parameterBindings == null) {
-			return Collections.emptyMap();
-		}
-		return Collections.unmodifiableMap(parameterBindings);
+	public Optional<Map<Integer, String>> getParameterBindings() {
+		return parameterBindings;
 	}
 
 	/**
@@ -137,24 +136,24 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	 *            parameter value
 	 */
 	public void addParameterBinding(int parameterIndex, String value) {
-		if (parameterBindings == null) {
-			parameterBindings = new HashMap<Integer, String>();
+		if (!parameterBindings.isPresent()) {
+			parameterBindings = Optional.of(new HashMap<Integer, String>());
 		}
-		parameterBindings.put(parameterIndex, value);
+		parameterBindings.get().put(parameterIndex, value);
 	}
 
 	@Override
-	public String getDBProductName() {
+	public Optional<String> getDBProductName() {
 		return dbProductName;
 	}
 
 	@Override
-	public String getDBProductVersion() {
+	public Optional<String> getDBProductVersion() {
 		return dbProductVersion;
 	}
 
 	@Override
-	public String getDBUrl() {
+	public Optional<String> getDBUrl() {
 		return dbUrl;
 	}
 
@@ -164,7 +163,7 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	 * @param productName
 	 *            name of the product
 	 */
-	public void setDBProductName(String productName) {
+	public void setDBProductName(Optional<String> productName) {
 		dbProductName = productName;
 	}
 
@@ -174,7 +173,7 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	 * @param productVersion
 	 *            version of the product
 	 */
-	public void setDBProductVersion(String productVersion) {
+	public void setDBProductVersion(Optional<String> productVersion) {
 		dbProductVersion = productVersion;
 	}
 
@@ -184,13 +183,18 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	 * @param url
 	 *            connection URL
 	 */
-	public void setDBUrl(String url) {
+	public void setDBUrl(Optional<String> url) {
 		dbUrl = url;
 	}
 
 	@Override
 	public String toString() {
 		return StringUtils.getStringRepresentation(this);
+	}
+
+	@Override
+	public Optional<String> getUnboundSQLStatement() {
+		return sql.contains("?") == true ? Optional.ofNullable(sql) : Optional.empty();
 	}
 	
 	

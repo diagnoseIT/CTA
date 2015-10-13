@@ -1,6 +1,7 @@
 package rocks.cta.dflt.impl.core.callables;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.ExceptionThrow;
@@ -10,7 +11,7 @@ import rocks.cta.dflt.impl.core.SubTraceImpl;
 /**
  * Default implementation of the {@link ExceptionThrow} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public class ExceptionThrowImpl extends AbstractCallableImpl implements ExceptionThrow, Serializable {
@@ -66,18 +67,18 @@ public class ExceptionThrowImpl extends AbstractCallableImpl implements Exceptio
 	}
 
 	@Override
-	public String getCause() {
-		return cause;
+	public Optional<String> getCause() {
+		return Optional.ofNullable(cause);
 	}
 
 	@Override
-	public String getStackTrace() {
-		return stackTrace;
+	public Optional<String> getStackTrace() {
+		return Optional.ofNullable(stackTrace);
 	}
 
 	@Override
-	public String getThrowableType() {
-		return throwableType;
+	public Optional<String> getThrowableType() {
+		return Optional.ofNullable(throwableType);
 	}
 
 	/**

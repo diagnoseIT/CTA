@@ -3,6 +3,7 @@ package rocks.cta.dflt.impl.core.callables;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.HTTPRequestProcessing;
@@ -12,7 +13,7 @@ import rocks.cta.dflt.impl.core.SubTraceImpl;
 /**
  * Default implementation of the {@link HTTPRequestProcessing} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public class HTTPRequestProcessingImpl extends AbstractNestingCallableImpl implements HTTPRequestProcessing, Serializable {
@@ -78,37 +79,37 @@ public class HTTPRequestProcessingImpl extends AbstractNestingCallableImpl imple
 	}
 
 	@Override
-	public HTTPMethod getRequestMethod() {
-		return requestMethod;
+	public Optional<HTTPMethod> getRequestMethod() {
+		return Optional.ofNullable(requestMethod);
 	}
 
 	@Override
-	public Map<String, String[]> getHTTPParameters() {
+	public Optional<Map<String, String[]>> getHTTPParameters() {
 		if (parameters == null) {
-			return Collections.emptyMap();
+			return Optional.empty();
 		}
-		return Collections.unmodifiableMap(parameters);
+		return Optional.ofNullable(Collections.unmodifiableMap(parameters));
 	}
 
 	@Override
-	public Map<String, String> getHTTPAttributes() {
+	public Optional<Map<String, String>> getHTTPAttributes() {
 		if (attributes == null) {
-			return Collections.emptyMap();
+			return Optional.empty();
 		}
-		return Collections.unmodifiableMap(attributes);
+		return Optional.ofNullable(Collections.unmodifiableMap(attributes));
 	}
 
 	@Override
-	public Map<String, String> getHTTPSessionAttributes() {
+	public Optional<Map<String, String>> getHTTPSessionAttributes() {
 		if (sessionAttributes == null) {
-			return Collections.emptyMap();
+			return Optional.empty();
 		}
-		return Collections.unmodifiableMap(sessionAttributes);
+		return Optional.ofNullable(Collections.unmodifiableMap(sessionAttributes));
 	}
 
 	@Override
-	public Map<String, String> getHTTPHeaders() {
-		return headers;
+	public Optional<Map<String, String>> getHTTPHeaders() {
+		return Optional.ofNullable(headers);
 	}
 
 	/**

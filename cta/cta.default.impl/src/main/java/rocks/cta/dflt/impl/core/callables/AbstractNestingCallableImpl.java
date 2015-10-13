@@ -14,10 +14,11 @@ import rocks.cta.dflt.impl.core.SubTraceImpl;
 /**
  * Default implementation of the {@link NestingCallable} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
-public abstract class AbstractNestingCallableImpl extends AbstractTimedCallableImpl implements NestingCallable, Serializable {
+public abstract class AbstractNestingCallableImpl extends AbstractTimedCallableImpl
+		implements NestingCallable, Serializable {
 
 	/**
 	 * 
@@ -25,7 +26,8 @@ public abstract class AbstractNestingCallableImpl extends AbstractTimedCallableI
 	private static final long serialVersionUID = -3329525574835616508L;
 
 	/**
-	 * {@link Callable} instances called by this {@link NestingCallable} instance.
+	 * {@link Callable} instances called by this {@link NestingCallable}
+	 * instance.
 	 */
 	protected List<Callable> children;
 
@@ -35,15 +37,15 @@ public abstract class AbstractNestingCallableImpl extends AbstractTimedCallableI
 	protected int childCount = 0;
 
 	/**
-	 * Default constructor for serialization. This constructor should not be used except for
-	 * deserialization.
+	 * Default constructor for serialization. This constructor should not be
+	 * used except for deserialization.
 	 */
 	public AbstractNestingCallableImpl() {
 	}
 
 	/**
-	 * Constructor. Adds the newly created {@link Callable} instance to the passed parent if the
-	 * parent is not null!
+	 * Constructor. Adds the newly created {@link Callable} instance to the
+	 * passed parent if the parent is not null!
 	 * 
 	 * @param parent
 	 *            {@link AbstractNestingCallableImpl} that called this Callable
@@ -104,7 +106,7 @@ public abstract class AbstractNestingCallableImpl extends AbstractTimedCallableI
 
 			return result == null ? Collections.emptyList() : Collections.unmodifiableList(result);
 		}
-		
+
 	}
 
 	@Override
@@ -113,8 +115,8 @@ public abstract class AbstractNestingCallableImpl extends AbstractTimedCallableI
 	}
 
 	/**
-	 * Updates the child count of this node by increasing the current child count by the passed
-	 * childCountIncrease.
+	 * Updates the child count of this node by increasing the current child
+	 * count by the passed childCountIncrease.
 	 * 
 	 * @param childCountIncrease
 	 *            the childCount to increment the current child count by

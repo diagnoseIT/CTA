@@ -1,11 +1,8 @@
 package rocks.cta.dflt.impl.core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import rocks.cta.api.core.SubTrace;
@@ -42,7 +39,7 @@ public class TraceImpl implements Trace, Serializable {
 	/**
 	 * Registry of Signatures used in this trace.
 	 */
-	private Map<Integer, Signature> containedSignatures;
+//	private Map<Integer, Signature> containedSignatures;
 
 	/**
 	 * Registry of String constants used in this trace instance.
@@ -57,7 +54,7 @@ public class TraceImpl implements Trace, Serializable {
 	/**
 	 * Indicates whether CPU times are supported in this trace.
 	 */
-	private boolean cpuTimesSupported;
+//	private boolean cpuTimesSupported;
 
 	/**
 	 * Default constructor.
@@ -121,21 +118,21 @@ public class TraceImpl implements Trace, Serializable {
 	}
 
 	/**
-	 * Retrieves the {@link Signature} for the given signature ID.
+	 * Retrieves the {@link String} for the given signature ID.
 	 * 
 	 * @param signatureId
 	 *            id for which to retrieve the signature.
 	 * @return Signature object for the passed id
 	 */
-	public Signature getSignature(int signatureId) {
-		if (containedSignatures == null) {
-			return null;
-		}
-		return containedSignatures.get(signatureId);
-	}
+//	public String getSignature(int signatureId) {
+//		if (containedSignatures == null) {
+//			return null;
+//		}
+//		return containedSignatures.get(signatureId);
+//	}
 
 	/**
-	 * Registers a new {@link Signature} if it is not contained in the repository, yet.
+	 * Registers a new {@link String} if it is not contained in the repository, yet.
 	 * 
 	 * @param returnType
 	 *            return type
@@ -149,34 +146,34 @@ public class TraceImpl implements Trace, Serializable {
 	 *            list of parameter types
 	 * @return id of the registered signature
 	 */
-	public int registerSignature(String returnType, String packageName, String className, String methodName, List<String> parameterTypes) {
-		int methodNameId = registerStringConstant(methodName);
-		int packageNameId = registerStringConstant(packageName);
-		int classNameId = registerStringConstant(className);
-		int returnTypeId = registerStringConstant(returnType);
-		List<Integer> pTypeIds = null;
-		if (parameterTypes != null) {
-			pTypeIds = new ArrayList<Integer>();
-			for (String pType : parameterTypes) {
-				pTypeIds.add(registerStringConstant(pType));
-			}
-		} else {
-			pTypeIds = Collections.emptyList();
-		}
-
-		Signature signature = new Signature(this, methodNameId, packageNameId, classNameId, pTypeIds, returnTypeId);
-
-		if (containedSignatures == null) {
-			containedSignatures = new HashMap<Integer, Signature>();
-		}
-		int hash = signature.hashCode();
-		if (!containedSignatures.containsKey(hash)) {
-			containedSignatures.put(hash, signature);
-
-		}
-
-		return hash;
-	}
+//	public int registerSignature(String returnType, String packageName, String className, String methodName, List<String> parameterTypes) {
+//		int methodNameId = registerStringConstant(methodName);
+//		int packageNameId = registerStringConstant(packageName);
+//		int classNameId = registerStringConstant(className);
+//		int returnTypeId = registerStringConstant(returnType);
+//		List<Integer> pTypeIds = null;
+//		if (parameterTypes != null) {
+//			pTypeIds = new ArrayList<Integer>();
+//			for (String pType : parameterTypes) {
+//				pTypeIds.add(registerStringConstant(pType));
+//			}
+//		} else {
+//			pTypeIds = Collections.emptyList();
+//		}
+//
+//		Signature signature = new Signature(this, methodNameId, packageNameId, classNameId, pTypeIds, returnTypeId);
+//
+//		if (containedSignatures == null) {
+//			containedSignatures = new HashMap<Integer, Signature>();
+//		}
+//		int hash = signature.hashCode();
+//		if (!containedSignatures.containsKey(hash)) {
+//			containedSignatures.put(hash, signature);
+//
+//		}
+//
+//		return hash;
+//	}
 
 	/**
 	 * Retrieves the String constant for the passed ID.
@@ -215,14 +212,10 @@ public class TraceImpl implements Trace, Serializable {
 		return StringUtils.getStringRepresentation(this);
 	}
 
-	@Override
-	public boolean hasCPUTimes() {
-		return cpuTimesSupported;
-	}
 
-	public void setCPUTimesSupported(boolean supported) {
-		cpuTimesSupported = supported;
-	}
+//	public void setCPUTimesSupported(boolean supported) {
+//		cpuTimesSupported = supported;
+//	}
 
 	@Override
 	public long getExclusiveTime() {

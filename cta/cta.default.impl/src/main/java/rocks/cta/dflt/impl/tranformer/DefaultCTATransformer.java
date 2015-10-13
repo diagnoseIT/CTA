@@ -82,7 +82,13 @@ public class DefaultCTATransformer {
 	 * @return corresponding location in the default implementation format
 	 */
 	public LocationImpl transform(Location location) {
-		return new LocationImpl(location.getHost(), location.getRuntimeEnvironment(), location.getApplication(), location.getBusinessTransaction());
+		LocationImpl loc = new LocationImpl(location.getHost());
+		
+		location.getRuntimeEnvironment().ifPresent(s -> loc.setRunTimeEnvironment(s));
+		location.getApplication().ifPresent(s -> loc.setApplication(s));
+		location.getBusinessTransaction().ifPresent(s -> loc.setBusinessTransaction(s));
+		
+		return loc;
 	}
 
 	/**
@@ -115,9 +121,18 @@ public class DefaultCTATransformer {
 	public MethodInvocationImpl transform(MethodInvocation methodInvocation, AbstractNestingCallableImpl dfltParent, SubTraceImpl dfltSubTrace) {
 		MethodInvocationImpl dfltMethodInvocation = new MethodInvocationImpl(dfltParent, dfltSubTrace);
 		dfltMethodInvocation.setCPUTime(methodInvocation.getCPUTime());
-		dfltMethodInvocation.setSignature(methodInvocation.getReturnType(), methodInvocation.getPackageName(), methodInvocation.getClassName(), methodInvocation.getMethodName(),
-				methodInvocation.getParameterTypes());
-		Map<Integer, String> parameterValues = methodInvocation.getParameterValues();
+		
+		//TODO: Eigene setter methode aufrufen
+//		dfltMethodInvocation.setSignature(methodInvocation.getReturnType().orElse(""), methodInvocation.getPackageName().orElse(""), methodInvocation.getClassName().orElse(""), methodInvocation.getMethodName().orElse(""),
+//				methodInvocation.getParameterTypes().orElse(Collections.emptyList()));
+		
+		methodInvocation.getReturnType().ifPresent(v -> dfltMethodInvocation.setReturnType(v));
+		methodInvocation.getPackageName().ifPresent(v -> dfltMethodInvocation.setPackageName(v));
+		methodInvocation.getClassName().ifPresent(v -> dfltMethodInvocation.setClassName(v));
+		methodInvocation.getMethodName().ifPresent(v -> dfltMethodInvocation.setMethodName(v));
+		methodInvocation.getParameterTypes().ifPresent(v -> dfltMethodInvocation.setParameterTypes(v));
+		
+		Map<Integer, String> parameterValues = methodInvocation.getParameterValues().get();
 		for (Integer key : parameterValues.keySet()) {
 			dfltMethodInvocation.addParameterValue(key, parameterValues.get(key));
 		}
@@ -141,8 +156,8 @@ public class DefaultCTATransformer {
 	public RemoteInvocationImpl transform(RemoteInvocation remoteInvocation, AbstractNestingCallableImpl dfltParent, SubTraceImpl dfltSubTrace) {
 		RemoteInvocationImpl dfltRemoteInvocation = new RemoteInvocationImpl(dfltParent, dfltSubTrace);
 		dfltRemoteInvocation.setTarget(remoteInvocation.getTarget());
-		if (remoteInvocation.hasTargetSubTrace()) {
-			SubTraceImpl dfltTargetSubTrace = transform(remoteInvocation.getTargetSubTrace(), null, (TraceImpl) dfltSubTrace.getContainingTrace());
+		if (remoteInvocation.getTargetSubTrace().isPresent()) {
+			SubTraceImpl dfltTargetSubTrace = transform(remoteInvocation.getTargetSubTrace().get(), null, (TraceImpl) dfltSubTrace.getContainingTrace());
 			dfltRemoteInvocation.setTargetSubTrace(dfltTargetSubTrace);
 		}
 
@@ -169,9 +184,9 @@ public class DefaultCTATransformer {
 		dfltDBInvocation.setDBProductName(dbInvocation.getDBProductName());
 		dfltDBInvocation.setDBProductVersion(dbInvocation.getDBProductVersion());
 		dfltDBInvocation.setDBUrl(dbInvocation.getDBUrl());
-		dfltDBInvocation.setPrepared(dbInvocation.isPrepared());
+		dbInvocation.isPrepared().ifPresent(b -> dfltDBInvocation.setPrepared(b));
 		dfltDBInvocation.setSQLStatement(dbInvocation.getSQLStatement());
-		Map<Integer, String> parameterBindings = dbInvocation.getParameterBindings();
+		Map<Integer, String> parameterBindings = dbInvocation.getParameterBindings().get();
 		for (Integer key : parameterBindings.keySet()) {
 			dfltDBInvocation.addParameterBinding(key, parameterBindings.get(key));
 		}
@@ -197,11 +212,11 @@ public class DefaultCTATransformer {
 	public HTTPRequestProcessingImpl transform(HTTPRequestProcessing httpRequest, AbstractNestingCallableImpl dfltParent, SubTraceImpl dfltSubTrace) {
 		HTTPRequestProcessingImpl dfltHTTPRequest = new HTTPRequestProcessingImpl(dfltParent, dfltSubTrace);
 		dfltHTTPRequest.setUri(httpRequest.getUri());
-		dfltHTTPRequest.setRequestMethod(httpRequest.getRequestMethod());
-		dfltHTTPRequest.setHTTPParameters(httpRequest.getHTTPParameters());
-		dfltHTTPRequest.setHTTPAttributes(httpRequest.getHTTPAttributes());
-		dfltHTTPRequest.setHTTPSessionAttributes(httpRequest.getHTTPSessionAttributes());
-		dfltHTTPRequest.setHTTPHeaders(httpRequest.getHTTPHeaders());
+		httpRequest.getRequestMethod().ifPresent(v -> dfltHTTPRequest.setRequestMethod(v));
+		dfltHTTPRequest.setHTTPParameters(httpRequest.getHTTPParameters().get());
+		dfltHTTPRequest.setHTTPAttributes(httpRequest.getHTTPAttributes().get());
+		dfltHTTPRequest.setHTTPSessionAttributes(httpRequest.getHTTPSessionAttributes().get());
+		dfltHTTPRequest.setHTTPHeaders(httpRequest.getHTTPHeaders().get());
 		
 		transformTimedCallableInfo(httpRequest, dfltHTTPRequest);
 		transformCallableInfo(httpRequest, dfltHTTPRequest);
@@ -222,10 +237,10 @@ public class DefaultCTATransformer {
 	 */
 	public ExceptionThrowImpl transform(ExceptionThrow exceptionThrow, AbstractNestingCallableImpl dfltParent, SubTraceImpl dfltSubTrace) {
 		ExceptionThrowImpl dfltExceptionThrow = new ExceptionThrowImpl(dfltParent, dfltSubTrace);
-		dfltExceptionThrow.setCause(exceptionThrow.getCause());
 		dfltExceptionThrow.setErrorMessage(exceptionThrow.getErrorMessage());
-		dfltExceptionThrow.setStackTrace(exceptionThrow.getStackTrace());
-		dfltExceptionThrow.setThrowableType(exceptionThrow.getThrowableType());
+		exceptionThrow.getCause().ifPresent(v -> dfltExceptionThrow.setCause(v));
+		exceptionThrow.getStackTrace().ifPresent(v -> dfltExceptionThrow.setStackTrace(v));
+		exceptionThrow.getThrowableType().ifPresent(v -> dfltExceptionThrow.setThrowableType(v));
 
 		transformCallableInfo(exceptionThrow, dfltExceptionThrow);
 		return dfltExceptionThrow;
@@ -246,8 +261,8 @@ public class DefaultCTATransformer {
 	 */
 	public LoggingInvocationImpl transform(LoggingInvocation loggingInvocation, AbstractNestingCallableImpl dfltParent, SubTraceImpl dfltSubTrace) {
 		LoggingInvocationImpl dfltLoggingInvocation = new LoggingInvocationImpl(dfltParent, dfltSubTrace);
-		dfltLoggingInvocation.setLoggingLevel(loggingInvocation.getLoggingLevel());
 		dfltLoggingInvocation.setMessage(loggingInvocation.getMessage());
+		loggingInvocation.getLoggingLevel().ifPresent(v -> dfltLoggingInvocation.setLoggingLevel(v));
 
 		transformCallableInfo(loggingInvocation, dfltLoggingInvocation);
 		return dfltLoggingInvocation;
@@ -275,7 +290,7 @@ public class DefaultCTATransformer {
 	 */
 	private void transformCallableInfo(Callable callable, AbstractCallableImpl dfltCallable) {
 		dfltCallable.setTimestamp(callable.getTimestamp());
-		for (String label : callable.getLabels()) {
+		for (String label : callable.getLabels().get()) {
 			dfltCallable.addLabel(label);
 		}
 	}

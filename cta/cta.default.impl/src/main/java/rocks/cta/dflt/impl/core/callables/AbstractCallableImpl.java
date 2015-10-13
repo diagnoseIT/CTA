@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import rocks.cta.api.core.AdditionalInformation;
 import rocks.cta.api.core.SubTrace;
@@ -16,7 +18,7 @@ import rocks.cta.dflt.impl.core.TraceImpl;
 /**
  * Default implementation of the {@link Callable} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public abstract class AbstractCallableImpl implements Callable, Serializable {
@@ -37,14 +39,15 @@ public abstract class AbstractCallableImpl implements Callable, Serializable {
 	protected long entryTime = -1;
 
 	/**
-	 * List of label identifiers. Identifiers point to a repository in the containing trace.
+	 * List of label identifiers. Identifiers point to a repository in the
+	 * containing trace.
 	 */
-	protected List<Integer> labelIds;
+	protected Optional<List<Integer>> labelIds = Optional.empty();
 
 	/**
 	 * List of additional information objects.
 	 */
-	protected List<AdditionalInformation> additionInfos;
+	protected Optional<Collection<AdditionalInformation>> additionInfos = Optional.empty();
 
 	/**
 	 * Containing SubTrace.
@@ -52,16 +55,16 @@ public abstract class AbstractCallableImpl implements Callable, Serializable {
 	protected SubTraceImpl containingSubTrace;
 
 	/**
-	 * Default constructor for serialization. This constructor should not be used except for
-	 * deserialization.
+	 * Default constructor for serialization. This constructor should not be
+	 * used except for deserialization.
 	 */
 	public AbstractCallableImpl() {
 
 	}
 
 	/**
-	 * Constructor. Adds the newly created {@link Callable} instance to the passed parent if the
-	 * parent is not null!
+	 * Constructor. Adds the newly created {@link Callable} instance to the
+	 * passed parent if the parent is not null!
 	 * 
 	 * @param parent
 	 *            {@link AbstractNestingCallableImpl} that called this Callable
@@ -96,16 +99,17 @@ public abstract class AbstractCallableImpl implements Callable, Serializable {
 	}
 
 	@Override
-	public List<String> getLabels() {
-		if (labelIds == null) {
-			return Collections.emptyList();
+	public Optional<List<String>> getLabels() {
+		if (!labelIds.isPresent()) {
+			return Optional.empty();
 		}
-		List<String> labels = new ArrayList<String>();
+		
 		TraceImpl trace = ((TraceImpl) getContainingSubTrace().getContainingTrace());
-		for (int id : labelIds) {
-			labels.add(trace.getStringConstant(id));
-		}
-		return Collections.unmodifiableList(labels);
+
+		Optional<List<String>> resultList = labelIds.map(l -> l.stream().map(i -> trace.getStringConstant(i)).collect(Collectors.toList()));
+		
+		return Optional.of(Collections.unmodifiableList(resultList.get()));
+
 	}
 
 	/**
@@ -116,28 +120,22 @@ public abstract class AbstractCallableImpl implements Callable, Serializable {
 	 */
 	public void addLabel(String label) {
 
-		if (labelIds == null) {
-			labelIds = new ArrayList<Integer>();
+		if (!labelIds.isPresent()) {
+			labelIds = Optional.of(new ArrayList<Integer>());
 		}
 
 		int hash = ((TraceImpl) containingSubTrace.getContainingTrace()).registerStringConstant(label);
-		labelIds.add(hash);
+		labelIds.get().add(hash);
 	}
 
 	@Override
-	public boolean hasLabel(String label) {
-		if (labelIds == null) {
-			return false;
+	public Optional<Collection<AdditionalInformation>> getAdditionalInformation() {
+		
+		if (!additionInfos.isPresent()) {
+			return Optional.empty();
 		}
-		return labelIds.contains(label.hashCode());
-	}
-
-	@Override
-	public Collection<AdditionalInformation> getAdditionalInformation() {
-		if (additionInfos == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(additionInfos);
+		
+		return Optional.of(Collections.unmodifiableCollection(additionInfos.get()));
 	}
 
 	/**
@@ -147,22 +145,27 @@ public abstract class AbstractCallableImpl implements Callable, Serializable {
 	 *            additional information to attach
 	 */
 	public void addAdditionalInformation(AdditionalInformation additionalInfo) {
-		if (additionInfos == null) {
-			additionInfos = new ArrayList<AdditionalInformation>();
+		if (!additionInfos.isPresent()) {
+			additionInfos = Optional.of(new ArrayList<AdditionalInformation>());
 		}
-		additionInfos.add(additionalInfo);
+		additionInfos.get().add(additionalInfo);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends AdditionalInformation> Collection<T> getAdditionalInformation(Class<T> type) {
-		List<T> result = new ArrayList<T>();
-		for (AdditionalInformation aInfo : additionInfos) {
-			if (type.isAssignableFrom(aInfo.getClass())) {
-				result.add((T) aInfo);
+	public <T extends AdditionalInformation> Optional<Collection<T>> getAdditionalInformation(Class<T> type) {
+		if (additionInfos.isPresent()) {
+
+			List<T> result = new ArrayList<T>();
+			for (AdditionalInformation aInfo : additionInfos.get()) {
+				if (type.isAssignableFrom(aInfo.getClass())) {
+					result.add((T) aInfo);
+				}
 			}
+			return Optional.of(Collections.unmodifiableCollection(result));
+		} else {
+			return Optional.empty();
 		}
-		return Collections.unmodifiableList(result);
 	}
 
 }

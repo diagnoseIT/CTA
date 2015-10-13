@@ -1,6 +1,7 @@
 package rocks.cta.api.core;
 
 import java.util.List;
+import java.util.Optional;
 
 import rocks.cta.api.core.callables.Callable;
 
@@ -53,12 +54,6 @@ public interface SubTrace extends TimedElement, TreeIterable<Callable> {
 	 * @return unique identifier of the {@link SubTrace}
 	 */
 	long getId();
-
-	/**
-	 * 
-	 * @return the maximum depth of the {@link SubTrace}
-	 */
-	int maxDepth();
 
 	/**
 	 * 

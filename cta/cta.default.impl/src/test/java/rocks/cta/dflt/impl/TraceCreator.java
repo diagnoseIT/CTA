@@ -124,7 +124,11 @@ public class TraceCreator {
 		} else {
 			MethodInvocationImpl methodInvocation = new MethodInvocationImpl(parent, subTrace);
 
-			methodInvocation.setSignature(null, "package", "MyClass", "SubTrace Invocation", null);
+			methodInvocation.setSignature("package.MyClass.SubTrace Invocation");
+			
+			methodInvocation.setPackageName("package");
+			methodInvocation.setClassName("MyClass");
+			methodInvocation.setMethodName("SubTrace Invocation");
 
 			for (int i = 0; i < WIDTH; i++) {
 				createChildNode(methodInvocation, subTrace, trace, depth + 1);

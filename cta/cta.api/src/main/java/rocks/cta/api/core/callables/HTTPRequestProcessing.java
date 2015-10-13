@@ -1,6 +1,7 @@
 package rocks.cta.api.core.callables;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents a HTTP request in a trace / sub-trace.
@@ -18,37 +19,37 @@ public interface HTTPRequestProcessing extends NestingCallable {
 	/**
 	 * 
 	 * 
-	 * @return returns the method of the HTTP request.
+	 * @return an {@link Optional} with the method of the HTTP request as value. Empty {@link Optional} if not present.
 	 */
-	HTTPMethod getRequestMethod();
+	Optional<HTTPMethod> getRequestMethod();
 
 	/**
 	 * Returns a Map of HTTP parameters. Key represents the parameter name. Value is a String array.
 	 * 
-	 * @return an <b>unmodifiable map</b> of HTTP parameters
+	 * @return an {@link Optional} with an <b>unmodifiable map</b> of HTTP parameters as value. Empty {@link Optional} if not present.
 	 */
-	Map<String, String[]> getHTTPParameters();
+	Optional<Map<String, String[]>> getHTTPParameters();
 
 	/**
 	 * Returns a Map of HTTP attributes. Key represents the attribute name.
 	 * 
-	 * @return an <b>unmodifiable map</b> of HTTP attributes
+	 * @return an {@link Optional} with an <b>unmodifiable map</b> of HTTP attributes as value. Empty {@link Optional} if not present.
 	 */
-	Map<String, String> getHTTPAttributes();
+	Optional<Map<String, String>> getHTTPAttributes();
 
 	/**
 	 * Returns a Map of HTTP session attributes. Key represents the session attribute name.
 	 * 
-	 * @return an <b>unmodifiable map</b> of HTTP session attributes
+	 * @return an {@link Optional} with an <b>unmodifiable map</b> of HTTP session attributes as value. Empty {@link Optional} if not present.
 	 */
-	Map<String, String> getHTTPSessionAttributes();
+	Optional<Map<String, String>> getHTTPSessionAttributes();
 
 	/**
 	 * Returns a Map of HTTP headers. 
 	 * 
-	 * @return an <b>unmodifiable map</b> of HTTP headers
+	 * @return an {@link Optional} with an <b>unmodifiable map</b> of HTTP headers as value. Empty {@link Optional} if not present.
 	 */
-	Map<String, String> getHTTPHeaders();
+	Optional<Map<String, String>> getHTTPHeaders();
 	
 	/**
 	 * Enumeration of possible HTTP methods.

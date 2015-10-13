@@ -18,7 +18,7 @@ import rocks.cta.dflt.impl.core.callables.AbstractCallableImpl;
 /**
  * Default implementation of the {@link SubTrace} interface of the CTA.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public class SubTraceImpl implements SubTrace, Serializable {
@@ -36,7 +36,7 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	/**
 	 * SubTrace that invoked this SubTrace.
 	 */
-	private SubTraceImpl parentSubTrace;
+	private SubTrace parentSubTrace;
 
 	/**
 	 * SubTraces invoked by this SubTrace.
@@ -57,11 +57,6 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	 * Identified of this SubTRace.
 	 */
 	private long subTraceId;
-
-	/**
-	 * maximal depth of this SubTrace.
-	 */
-	private transient int maxDepth = -1;
 
 	/**
 	 * size of this SubTrace.
@@ -166,41 +161,6 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	}
 
 	@Override
-	public int maxDepth() {
-		if (maxDepth < 0) {
-			if (getRoot() instanceof NestingCallable) {
-				maxDepth = maxDepth((NestingCallable) getRoot());
-			} else {
-				maxDepth = 0;
-			}
-
-		}
-		return maxDepth;
-	}
-
-	/**
-	 * Recursively calculates the maximal depth of the sub tree below the passed Callable.
-	 * 
-	 * @param callable
-	 *            root of the sub tree for which the maximal depth shell be calculated
-	 * @return the maximal depth
-	 */
-	private int maxDepth(NestingCallable callable) {
-		if (callable.getCallees().isEmpty()) {
-			return 0;
-		} else {
-			int maxDepth = -1;
-			for (NestingCallable child : callable.getCallees(NestingCallable.class)) {
-				int depth = maxDepth(child);
-				if (depth > maxDepth) {
-					maxDepth = depth;
-				}
-			}
-			return maxDepth + 1;
-		}
-	}
-
-	@Override
 	public int size() {
 		if (size < 0) {
 			int count = 0;
@@ -256,9 +216,13 @@ public class SubTraceImpl implements SubTrace, Serializable {
 	@Override
 	public long getExclusiveTime() {
 		long exclTime = getResponseTime();
-		for (SubTrace child : getSubTraces()) {
-			exclTime -= child.getResponseTime();
-		}
+//		for (SubTrace child : getSubTraces().get()) {
+//			exclTime -= child.getResponseTime();
+//		}
+		
+		exclTime -= getSubTraces().stream().mapToLong(SubTrace::getResponseTime).sum();
+				
+		
 		return exclTime;
 	}
 

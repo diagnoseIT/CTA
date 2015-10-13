@@ -71,16 +71,32 @@ public class MethodInvocationImplTest {
 		trace.setRoot(subTrace);
 		subTrace.setLocation(new LocationImpl("localhost", "JVM", "APP", "BT"));
 		MethodInvocationImpl m1 = new MethodInvocationImpl(null, subTrace);
-		m1.setSignature(RETURN_TYPES[0], PACKAGE_NAMES[0], CLASS_NAMES[0],
-				METHOD_NAMES[0], Arrays.asList(PARAMETER_TYPES[0]));
+		
+		m1.setReturnType(RETURN_TYPES[0]);
+		m1.setPackageName(PACKAGE_NAMES[0]);
+		m1.setClassName(CLASS_NAMES[0]);
+		m1.setMethodName(METHOD_NAMES[0]);
+		m1.setParameterTypes(Arrays.asList(PARAMETER_TYPES[0]));
+	
 		subTrace.setRoot(m1);
+		
 		MethodInvocationImpl m2 = new MethodInvocationImpl(m1, subTrace);
-		m2.setSignature(RETURN_TYPES[1], PACKAGE_NAMES[1], CLASS_NAMES[1],
-				METHOD_NAMES[1], Arrays.asList(PARAMETER_TYPES[1]));
+		
+		m2.setReturnType(RETURN_TYPES[1]);
+		m2.setPackageName(PACKAGE_NAMES[1]);
+		m2.setClassName(CLASS_NAMES[1]);
+		m2.setMethodName(METHOD_NAMES[1]);
+		m2.setParameterTypes(Arrays.asList(PARAMETER_TYPES[1]));
+		
 		m2.addLabel(C2_LABEL);
+		
 		MethodInvocationImpl m3 = new MethodInvocationImpl(m1, subTrace);
-		m3.setSignature(RETURN_TYPES[2], PACKAGE_NAMES[2], CLASS_NAMES[2],
-				METHOD_NAMES[2], Arrays.asList(PARAMETER_TYPES[2]));
+		
+		m3.setReturnType(RETURN_TYPES[2]);
+		m3.setPackageName(PACKAGE_NAMES[2]);
+		m3.setClassName(CLASS_NAMES[2]);
+		m3.setMethodName(METHOD_NAMES[2]);
+		m3.setParameterTypes(Arrays.asList(PARAMETER_TYPES[2]));
 
 		methodInvocation = m1;
 	}
@@ -90,28 +106,35 @@ public class MethodInvocationImplTest {
 	 */
 	@Test
 	public void testSignature() {
-		Assert.assertEquals(RETURN_TYPES[0], methodInvocation.getReturnType());
-		Assert.assertEquals(PACKAGE_NAMES[0], methodInvocation.getPackageName());
-		Assert.assertEquals(CLASS_NAMES[0], methodInvocation.getClassName());
-		Assert.assertEquals(METHOD_NAMES[0], methodInvocation.getMethodName());
-		Assert.assertTrue(methodInvocation.getParameterTypes().containsAll(
-				Arrays.asList(PARAMETER_TYPES[0])));
+
+		
+		
+		Assert.assertEquals(RETURN_TYPES[0], methodInvocation.getReturnType().get());
+		Assert.assertEquals(PACKAGE_NAMES[0], methodInvocation.getPackageName().get());
+		Assert.assertEquals(CLASS_NAMES[0], methodInvocation.getClassName().get());
+		Assert.assertEquals(METHOD_NAMES[0], methodInvocation.getMethodName().get());
+				
+		
+		Assert.assertTrue(methodInvocation.getParameterTypes().get().containsAll(Arrays.asList(PARAMETER_TYPES[0])));
 
 		MethodInvocationImpl child = (MethodInvocationImpl) methodInvocation.getCallees().get(0);
-		Assert.assertEquals(RETURN_TYPES[1], child.getReturnType());
-		Assert.assertEquals(PACKAGE_NAMES[1], child.getPackageName());
-		Assert.assertEquals(CLASS_NAMES[1], child.getClassName());
-		Assert.assertEquals(METHOD_NAMES[1], child.getMethodName());
-		Assert.assertTrue(child.getParameterTypes().isEmpty());
+		Assert.assertEquals(RETURN_TYPES[1], child.getReturnType().get());
+		
+		Assert.assertEquals(PACKAGE_NAMES[1], child.getPackageName().get());
+		Assert.assertEquals(CLASS_NAMES[1], child.getClassName().get());
+		Assert.assertEquals(METHOD_NAMES[1], child.getMethodName().get());
+		System.out.println(child.getParameterTypes().isPresent());
+		Assert.assertTrue(child.getParameterTypes().get().isEmpty());
 
 		child = methodInvocation.getCallees(MethodInvocationImpl.class).get(1);
-		Assert.assertEquals(RETURN_TYPES[2], child.getReturnType());
-		Assert.assertEquals(PACKAGE_NAMES[2], child.getPackageName());
-		Assert.assertEquals(CLASS_NAMES[2], child.getClassName());
-		Assert.assertEquals(METHOD_NAMES[2], child.getMethodName());
-		Assert.assertTrue(child.getParameterTypes().containsAll(
-				Arrays.asList(PARAMETER_TYPES[2])));
-		Assert.assertTrue(child.isConstructor());
+		Assert.assertEquals(RETURN_TYPES[2], child.getReturnType().get());
+		Assert.assertEquals(PACKAGE_NAMES[2], child.getPackageName().get());
+		Assert.assertEquals(CLASS_NAMES[2], child.getClassName().get());
+		Assert.assertEquals(METHOD_NAMES[2], child.getMethodName().get());
+		
+		Assert.assertTrue(child.getParameterTypes().isPresent());
+		Assert.assertTrue(child.getParameterTypes().get().containsAll(Arrays.asList(PARAMETER_TYPES[2])));
+		Assert.assertTrue(child.isConstructor().get());
 
 	}
 
@@ -121,7 +144,7 @@ public class MethodInvocationImplTest {
 	@Test
 	public void testLabels() {
 		Callable child = methodInvocation.getCallees().get(0);
-		Assert.assertTrue(child.hasLabel(C2_LABEL));
-		Assert.assertTrue(child.getLabels().size() == 1);
+		Assert.assertTrue(child.getLabels().get().contains(C2_LABEL));
+		Assert.assertTrue(child.getLabels().get().size() == 1);
 	}
 }

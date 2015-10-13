@@ -1,9 +1,11 @@
 package rocks.cta.api.core.callables;
 
+import java.util.Optional;
+
 /**
  * Represents a thrown exception in a trace / sub-trace.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public interface ExceptionThrow extends Callable {
@@ -15,19 +17,19 @@ public interface ExceptionThrow extends Callable {
 
 	/**
 	 * 
-	 * @return the cause of the thrown exception
+	 * @return an {@link Optional} with the cause of the thrown exception as value. Empty {@link Optional} when not present.
 	 */
-	String getCause();
+	Optional<String> getCause();
 
 	/**
 	 * 
-	 * @return the stacktrace at the time of throwing the exception
+	 * @return an {@link Optional} with the stacktrace at the time of throwing the exception as value. Empty {@link Optional} when not present.
 	 */
-	String getStackTrace();
+	Optional<String> getStackTrace();
 
 	/**
 	 * 
-	 * @return the full qualified class name of the type of the throwable
+	 * @return an {@link Optional} with the full qualified class name of the type of the throwable as value. Empty {@link Optional} when not present.
 	 */
-	String getThrowableType();
+	Optional<String> getThrowableType();
 }

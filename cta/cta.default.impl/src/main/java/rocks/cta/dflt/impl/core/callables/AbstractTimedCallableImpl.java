@@ -11,7 +11,7 @@ import rocks.cta.dflt.impl.core.SubTraceImpl;
 /**
  * Default implementation of the {@link TimedCallable} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public abstract class AbstractTimedCallableImpl extends AbstractCallableImpl implements TimedCallable, Serializable {
@@ -62,9 +62,12 @@ public abstract class AbstractTimedCallableImpl extends AbstractCallableImpl imp
 		if (exclusiveTime < 0) {
 			exclusiveTime = responseTime;
 			if (this instanceof NestingCallable) {
-				for (TimedCallable tCallable : ((NestingCallable) this).getCallees(TimedCallable.class)) {
-					exclusiveTime -= tCallable.getResponseTime();
-				}
+//				for (TimedCallable tCallable : ((NestingCallable) this).getCallees(TimedCallable.class)) {
+//					exclusiveTime -= tCallable.getResponseTime();
+//				}
+				
+				exclusiveTime -= ((NestingCallable) this).getCallees(TimedCallable.class).stream().mapToLong(TimedCallable::getResponseTime).sum();
+				
 			}
 		}
 		return exclusiveTime;

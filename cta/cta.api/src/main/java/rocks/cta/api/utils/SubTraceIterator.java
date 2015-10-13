@@ -63,12 +63,13 @@ public class SubTraceIterator implements TreeIterator<SubTrace> {
 
 		SubTrace tmpSubTrace = currentIterator.next();
 		currentDepth = iteratorStack.size();
+
 		List<SubTrace> subTraces = tmpSubTrace.getSubTraces();
 		if (!subTraces.isEmpty()) {
 			iteratorStack.push(currentIterator);
 			currentIterator = subTraces.iterator();
 		}
-
+		
 		return tmpSubTrace;
 
 	}

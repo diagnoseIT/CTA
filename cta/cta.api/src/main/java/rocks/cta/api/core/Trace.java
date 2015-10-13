@@ -1,21 +1,16 @@
 package rocks.cta.api.core;
 
 import rocks.cta.api.core.callables.Callable;
-import rocks.cta.api.core.callables.MethodInvocation;
 
 /**
  * A {@link Trace} subsumes a logical invocation sequence through the target system potentially
  * passing multiple system nodes, containers or applications. Hence, a {@link Trace} consists of a
  * composite structure (tree structure) of {@link SubTrace} instances.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public interface Trace extends TimedElement, TreeIterable<Callable> {
-	/**
-	 * String constant for unknown String properties.
-	 */
-	String UNKOWN = "unknown";
 
 	/**
 	 * Factor to convert nanoseconds to milliseconds.
@@ -54,11 +49,4 @@ public interface Trace extends TimedElement, TreeIterable<Callable> {
 	 */
 	int size();
 
-	/**
-	 * Indicates whether CPU time is supported in this trace.
-	 * 
-	 * @return true, if CPU time is provided for all {@link MethodInvocation} instances in this
-	 *         trace.
-	 */
-	boolean hasCPUTimes();
 }

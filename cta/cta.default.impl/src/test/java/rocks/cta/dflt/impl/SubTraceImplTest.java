@@ -1,10 +1,9 @@
 package rocks.cta.dflt.impl;
 
-import junit.framework.Assert;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.junit.Assert;
 import rocks.cta.api.core.SubTrace;
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.NestingCallable;
@@ -93,7 +92,11 @@ public class SubTraceImplTest {
 		MethodInvocationImpl callable = new MethodInvocationImpl(parent, subTrace);
 
 		methodCounter++;
-		callable.setSignature(null, "package", "MyClass", METHOD_PREFIX + methodCounter, null);
+		
+		callable.setPackageName("package");
+		callable.setClassName("MyClass");
+		callable.setMethodName(METHOD_PREFIX + methodCounter);
+		
 		for (int i = 0; i < WIDTH; i++) {
 			createChildNode(callable, subTrace, depth + 1);
 		}
@@ -108,10 +111,9 @@ public class SubTraceImplTest {
 	public void testSubTreeStructure() {
 		Assert.assertEquals(SIZE, sTrace.size());
 		Assert.assertEquals(SIZE - 1, ((NestingCallable)sTrace.getRoot()).getChildCount());
-		Assert.assertEquals(DEPTH, sTrace.maxDepth());
 		int i = 1;
 		for (Callable clbl : sTrace) {
-			Assert.assertEquals(METHOD_PREFIX + i, ((MethodInvocationImpl)clbl).getMethodName());
+			Assert.assertEquals(METHOD_PREFIX + i, ((MethodInvocationImpl)clbl).getMethodName().get());
 			i++;
 		}
 	}

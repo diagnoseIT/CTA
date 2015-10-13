@@ -1,6 +1,7 @@
 package rocks.cta.dflt.impl.core.callables;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import rocks.cta.api.core.Location;
 import rocks.cta.api.core.SubTrace;
@@ -12,7 +13,7 @@ import rocks.cta.dflt.impl.core.SubTraceImpl;
 /**
  * Default implementation of the {@link RemoteInvocation} API element.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public class RemoteInvocationImpl extends AbstractTimedCallableImpl implements RemoteInvocation, Serializable {
@@ -53,8 +54,8 @@ public class RemoteInvocationImpl extends AbstractTimedCallableImpl implements R
 	}
 
 	@Override
-	public SubTrace getTargetSubTrace() {
-		return targetSubTrace;
+	public Optional<SubTrace> getTargetSubTrace() {
+		return Optional.ofNullable(targetSubTrace);
 	}
 
 	/**
@@ -68,16 +69,12 @@ public class RemoteInvocationImpl extends AbstractTimedCallableImpl implements R
 	}
 
 	@Override
-	public boolean hasTargetSubTrace() {
-		return targetSubTrace != null;
-	}
-
-	@Override
-	public Location getTargetLocation() {
-		if (targetSubTrace != null) {
-			return targetSubTrace.getLocation();
-		}
-		return null;
+	public Optional<Location> getTargetLocation() {
+//		if (targetSubTrace != null) {
+//			return targetSubTrace.getLocation();
+//		}
+//		return null;
+		return Optional.ofNullable(targetSubTrace.getLocation());
 	}
 
 	@Override

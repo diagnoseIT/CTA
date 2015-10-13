@@ -2,6 +2,7 @@ package rocks.cta.api.core.callables;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import rocks.cta.api.core.AdditionalInformation;
 import rocks.cta.api.core.SubTrace;
@@ -11,7 +12,7 @@ import rocks.cta.api.core.SubTrace;
  * behaviour (e.g. operation execution). A {@link Callable} is iterable in the sense that the
  * iterator traverses the sub-tree below the corresponding {@link Callable} instance.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 
@@ -42,25 +43,15 @@ public interface Callable {
 	/**
 	 * Lables convey simple additional information to for individual {@link Callable} instances.
 	 * 
-	 * @return an <b>unmodifiable list</b> of labels
+	 * @return an {@link Optional} with an <b>unmodifiable list</b> of labels as value
 	 */
-	List<String> getLabels();
-
-	/**
-	 * Checks whether this {@link Callable} is labled with the given value.
-	 * 
-	 * @param label
-	 *            the label value to check for
-	 * @return <code>true</code> if label is attached to this {@link Callable}, otherwise
-	 *         <code>false</code>
-	 */
-	boolean hasLabel(String label);
+	Optional<List<String>> getLabels();
 
 	/**
 	 * 
-	 * @return an <b>unmodifiable list</b> of all additional information objects
+	 * @return an {@link Optional} with an <b>unmodifiable list</b> of all additional information objects as value
 	 */
-	Collection<AdditionalInformation> getAdditionalInformation();
+	Optional<Collection<AdditionalInformation>> getAdditionalInformation();
 
 	/**
 	 * Returns a list of all additional information objects of the provided type.
@@ -70,8 +61,8 @@ public interface Callable {
 	 *            retrieved
 	 * @param <T>
 	 *            Class type of the retrieved additional information
-	 * @return an <b>unmodifiable list</b> of additional information objects of the provided type
+	 * @return an {@link Optional} with an <b>unmodifiable list</b> of additional information objects of the provided type as value if present or an {@link Optional} that is empty
 	 */
-	<T extends AdditionalInformation> Collection<T> getAdditionalInformation(Class<T> type);
+	<T extends AdditionalInformation> Optional<Collection<T>> getAdditionalInformation(Class<T> type);
 
 }

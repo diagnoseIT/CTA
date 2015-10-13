@@ -1,10 +1,9 @@
 package rocks.cta.dflt.impl;
 
-import junit.framework.Assert;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.junit.Assert;
 import rocks.cta.api.core.Trace;
 import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.MethodInvocation;
@@ -55,7 +54,7 @@ public class TraceImplTest {
 			}
 			if (i == TraceCreator.IDX_ON_SUBTRACE_INVOCATION) {
 				Assert.assertTrue(clbl instanceof RemoteInvocation);
-				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, ((RemoteInvocation)clbl).getTargetSubTrace().getId());
+				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, ((RemoteInvocation)clbl).getTargetSubTrace().get().getId());
 			}
 			Assert.assertEquals(TraceCreator.METHOD_PREFIX + i, ((MethodInvocation)clbl).getMethodName());
 			i++;

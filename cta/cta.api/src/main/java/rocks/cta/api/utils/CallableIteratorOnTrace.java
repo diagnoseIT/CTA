@@ -69,11 +69,11 @@ public class CallableIteratorOnTrace implements TreeIterator<Callable> {
 
 		Callable tmpCallable = currentIterator.next();
 
-		if (tmpCallable instanceof RemoteInvocation && ((RemoteInvocation) tmpCallable).hasTargetSubTrace()) {
+		if (tmpCallable instanceof RemoteInvocation && ((RemoteInvocation) tmpCallable).getTargetSubTrace().isPresent()) {
 			stackedDepth += ((CallableIterator) currentIterator).currentDepth() + 1;
 			iteratorStack.push(currentIterator);
 
-			currentIterator = new CallableIterator(((RemoteInvocation) tmpCallable).getTargetSubTrace().getRoot());
+			currentIterator = new CallableIterator(((RemoteInvocation) tmpCallable).getTargetSubTrace().get().getRoot());
 			tmpCallable = currentIterator.next();
 		}
 

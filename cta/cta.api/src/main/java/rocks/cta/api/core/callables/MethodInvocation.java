@@ -2,26 +2,27 @@ package rocks.cta.api.core.callables;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents an invocation of a method in a trace / sub-trace..
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public interface MethodInvocation extends NestingCallable {
 
 	/**
 	 * 
-	 * @return CPU time (including the response time of nested callees) in nanoseconds
+	 * @return an {@link Optional} with CPU time (including the response time of nested callees) in nanoseconds as value. Empty {@link Optional} if not present.
 	 */
-	long getCPUTime();
+	Optional<Long> getCPUTime();
 
 	/**
 	 * 
-	 * @return exclusive CPU time (excluding the CPU time of nested callees) in nanoseconds
+	 * @return an {@link Optional} with exclusive CPU time (excluding the CPU time of nested callees) in nanoseconds as value. Empty {@link Optional} if not present.
 	 */
-	long getExclusiveCPUTime();
+	Optional<Long> getExclusiveCPUTime();
 
 	/**
 	 * Returns the full qualified signature of the corresponding operation (including all
@@ -42,9 +43,9 @@ public interface MethodInvocation extends NestingCallable {
 	 * 
 	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method would return "myMethod"
 	 * 
-	 * @return method name
+	 * @return an {@link Optional} with the method name as value. Empty {@link Optional} if not set.
 	 */
-	String getMethodName();
+	Optional<String> getMethodName();
 
 	/**
 	 * Returns the simple class name of the corresponding operation.
@@ -53,9 +54,9 @@ public interface MethodInvocation extends NestingCallable {
 	 * 
 	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method would return "MyClass"
 	 * 
-	 * @return class name
+	 * @return an {@link Optional} with the class name as value. Empty {@link Optional} if not set
 	 */
-	String getClassName();
+	Optional<String> getClassName();
 
 	/**
 	 * Returns the package name of the corresponding operation.
@@ -64,48 +65,39 @@ public interface MethodInvocation extends NestingCallable {
 	 * 
 	 * For operation "org.my.MyClass.myMethod(org.my.Parameter)" this method would return "org.my"
 	 * 
-	 * @return package name
+	 * @return an {@link Optional} with the package name as value. Empty {@link Optional} if not set.
 	 */
-	String getPackageName();
+	Optional<String> getPackageName();
 
 	/**
 	 * Returns the parameter type of the corresponding operation.
 	 * 
 	 * 
 	 * 
-	 * @return an <b>unmodifiable list</b> of full qualified class names for the parameter names of the
-	 *         corresponding operation
+	 * @return an {@link Optional} with an <b>unmodifiable list</b> of full qualified class names for the parameter names of the
+	 *         corresponding operation as value. Empty {@link Optional} if not present.
 	 */
-	List<String> getParameterTypes();
-
-	/**
-	 * Indicates whether any parameter values are available for this {@link MethodInvocation}
-	 * instance.
-	 * 
-	 * @return true, if any parameter values are available, otherwise false.
-	 */
-	boolean hasParameterValues();
+	Optional<List<String>> getParameterTypes();
 
 	/**
 	 * Returns a Map of parameter values. The key is the index of the corresponding parameter in the
 	 * method signature (first parameter has an index of 1). The value is the String representation of the parameter value. 
 	 * 
-	 * @return an <b>unmodifiable map</b> of parameter values.
+	 * @return an {@link Optional} with an <b>unmodifiable map</b> of parameter values as value. Empty {@link Optional} if not present.
 	 */
-	Map<Integer, String> getParameterValues();
+	Optional<Map<Integer, String>> getParameterValues();
 	
 	/**
 	 * Returns the return type of the corresponding operation.
 	 * 
-	 * @return full qualified class name of the return type. If return type is unknown, then this
-	 *         method returns null;
+	 * @return an {@link Optional} with the full qualified class name of the return type as value. Empty {@link Optional} if return type is unknown.
 	 */
-	String getReturnType();
+	Optional<String> getReturnType();
 
 	/**
 	 * 
-	 * @return <code>true</code> if this {@link Callable} is a constructor, otherwise
-	 *         <code>false</code>
+	 * @return an {@link Optional} with <code>true</code> as value if this {@link Callable} is a constructor, otherwise
+	 *         <code>false</code>. Empty {@link Optional} if not present.
 	 */
-	boolean isConstructor();
+	Optional<Boolean> isConstructor();
 }

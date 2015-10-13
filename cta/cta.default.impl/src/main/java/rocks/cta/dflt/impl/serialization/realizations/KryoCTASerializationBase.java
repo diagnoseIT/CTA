@@ -1,5 +1,7 @@
 package rocks.cta.dflt.impl.serialization.realizations;
 
+import com.esotericsoftware.kryo.Kryo;
+
 import rocks.cta.dflt.impl.core.LocationImpl;
 import rocks.cta.dflt.impl.core.Signature;
 import rocks.cta.dflt.impl.core.SubTraceImpl;
@@ -13,8 +15,6 @@ import rocks.cta.dflt.impl.core.callables.HTTPRequestProcessingImpl;
 import rocks.cta.dflt.impl.core.callables.LoggingInvocationImpl;
 import rocks.cta.dflt.impl.core.callables.MethodInvocationImpl;
 import rocks.cta.dflt.impl.core.callables.RemoteInvocationImpl;
-
-import com.esotericsoftware.kryo.Kryo;
 
 /**
  * The {@link KryoCTASerializationBase} class is responsible for serializing and deserializing

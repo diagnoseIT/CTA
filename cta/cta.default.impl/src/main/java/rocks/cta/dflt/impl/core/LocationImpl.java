@@ -1,15 +1,15 @@
 package rocks.cta.dflt.impl.core;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import rocks.cta.api.core.Location;
-import rocks.cta.api.core.Trace;
 import rocks.cta.api.utils.StringUtils;
 
 /**
  * Default implementation of the {@link Location} interface of the CTA.
  * 
- * @author Alexander Wert
+ * @author Alexander Wert, Christoph Heger
  *
  */
 public class LocationImpl implements Location, Serializable {
@@ -22,27 +22,27 @@ public class LocationImpl implements Location, Serializable {
 	/**
 	 * Identifies the machine.
 	 */
-	private String host = Trace.UNKOWN;
+	private String host = null;
 
 	/**
 	 * Identifies the runtime environment (e.g. the JVM).
 	 */
-	private String runTimeEnvironment = Trace.UNKOWN;
+	private Optional<String> runTimeEnvironment = Optional.empty();
 
 	/**
 	 * Identifies the application.
 	 */
-	private String application = Trace.UNKOWN;
+	private Optional<String> application = Optional.empty();
 
 	/**
 	 * Identifies the business transaction.
 	 */
-	private String businessTransaction = Trace.UNKOWN;
+	private Optional<String> businessTransaction = Optional.empty();
 
 	/**
 	 * Identifies the node type.
 	 */
-	private String nodeType = Trace.UNKOWN;
+	private Optional<String> nodeType = Optional.empty();
 
 	/**
 	 * Default constructor.
@@ -69,28 +69,38 @@ public class LocationImpl implements Location, Serializable {
 		this.setBusinessTransaction(businessTransaction);
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param host
+	 *            Identifies the machine
+	 */
+	public LocationImpl(String host) {
+		this.setHost(host);
+	}
+
 	@Override
 	public String getHost() {
 		return host;
 	}
 
 	@Override
-	public String getRuntimeEnvironment() {
-		return getRunTimeEnvironment();
+	public Optional<String> getRuntimeEnvironment() {
+		return runTimeEnvironment;
 	}
 
 	@Override
-	public String getApplication() {
+	public Optional<String> getApplication() {
 		return application;
 	}
 
 	@Override
-	public String getBusinessTransaction() {
+	public Optional<String> getBusinessTransaction() {
 		return businessTransaction;
 	}
 
 	@Override
-	public String getNodeType() {
+	public Optional<String> getNodeType() {
 		return nodeType;
 	}
 
@@ -108,18 +118,11 @@ public class LocationImpl implements Location, Serializable {
 	}
 
 	/**
-	 * @return the runTimeEnvironment
-	 */
-	public String getRunTimeEnvironment() {
-		return runTimeEnvironment;
-	}
-
-	/**
 	 * @param runTimeEnvironment
 	 *            the runTimeEnvironment to set
 	 */
 	public void setRunTimeEnvironment(String runTimeEnvironment) {
-		this.runTimeEnvironment = runTimeEnvironment;
+		this.runTimeEnvironment = Optional.ofNullable(runTimeEnvironment);
 	}
 
 	/**
@@ -127,7 +130,7 @@ public class LocationImpl implements Location, Serializable {
 	 *            the application to set
 	 */
 	public void setApplication(String application) {
-		this.application = application;
+		this.application = Optional.ofNullable(application);
 	}
 
 	/**
@@ -135,7 +138,7 @@ public class LocationImpl implements Location, Serializable {
 	 *            the businessTransaction to set
 	 */
 	public void setBusinessTransaction(String businessTransaction) {
-		this.businessTransaction = businessTransaction;
+		this.businessTransaction = Optional.ofNullable(businessTransaction);
 	}
 
 	/**
@@ -143,7 +146,7 @@ public class LocationImpl implements Location, Serializable {
 	 *            the nodeType to set
 	 */
 	public void setNodeType(String nodeType) {
-		this.nodeType = nodeType;
+		this.nodeType = Optional.ofNullable(nodeType);
 	}
 
 }

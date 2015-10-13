@@ -64,9 +64,9 @@ public final class StringUtils {
 		strBuilder.append(DECIMAL_FORMAT.format(((double) methodInvocation.getResponseTime()) * NANOS_TO_MILLIS_FACTOR));
 		strBuilder.append(" | ");
 		strBuilder.append(DECIMAL_FORMAT.format(((double) methodInvocation.getExclusiveTime()) * NANOS_TO_MILLIS_FACTOR));
-		if (methodInvocation.getContainingSubTrace().getContainingTrace().hasCPUTimes()) {
+		if (methodInvocation.getCPUTime().isPresent()) {
 			strBuilder.append(" | ");
-			strBuilder.append(DECIMAL_FORMAT.format(((double) methodInvocation.getCPUTime()) * NANOS_TO_MILLIS_FACTOR));
+			strBuilder.append(DECIMAL_FORMAT.format(((double) methodInvocation.getCPUTime().get()) * NANOS_TO_MILLIS_FACTOR));
 		}
 		strBuilder.append(" ]");
 		return strBuilder.toString();
@@ -239,7 +239,7 @@ public final class StringUtils {
 		if (trace.getRoot() == null) {
 			strBuilder.append("EMPTY TRACE");
 			strBuilder.append(System.lineSeparator());
-		} else if (trace.getRoot().getSubTraces().isEmpty()) {
+		} else if (!trace.getRoot().getSubTraces().isEmpty()) {
 			strBuilder.append(getStringRepresentation(trace.getRoot()));
 		} else {
 			String indent = "   ";
