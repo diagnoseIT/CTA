@@ -192,7 +192,7 @@ public final class StringUtils {
 	public static String getStringRepresentation(SubTrace subTrace, int maxNumberLines) {
 		StringBuilder strBuilder = new StringBuilder();
 		String indent = "   ";
-		String header = " SubTrace (" + subTrace.getId() + ") : [ Response Time (ms)| Execution Time (ms)| CPU Time (ms)] ";
+		String header = " SubTrace (" + subTrace.getSubTraceId() + ") : [ Response Time (ms)| Execution Time (ms)| CPU Time (ms)] ";
 		int diff = SUBTRACE_DELIMITER.length() - header.length();
 		String firstLine = SUBTRACE_DELIMITER.substring(0, diff / 2 + 1) + header + SUBTRACE_DELIMITER.substring(0, SUBTRACE_DELIMITER.length() - (diff / 2 + 1 + header.length()));
 		strBuilder.append(firstLine);
@@ -250,7 +250,7 @@ public final class StringUtils {
 					strBuilder.append(indent);
 				}
 				strBuilder.append("SubTrace-");
-				strBuilder.append(subTrace.getId());
+				strBuilder.append(subTrace.getSubTraceId());
 				strBuilder.append(" (");
 				strBuilder.append(getStringRepresentation(subTrace.getLocation()));
 				strBuilder.append(")");

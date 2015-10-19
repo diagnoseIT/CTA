@@ -11,7 +11,7 @@ import rocks.cta.api.core.callables.Callable;
 import rocks.cta.api.core.callables.NestingCallable;
 
 /**
- * Iterator over Callables on a SubTrace.
+ * Iterator over all {@link Callable}s on a SubTrace.
  * 
  * @author Alexander Wert
  *
@@ -24,12 +24,12 @@ public class CallableIterator implements TreeIterator<Callable> {
 	private Stack<Iterator<Callable>> iteratorStack = new Stack<Iterator<Callable>>();
 
 	/**
-	 * Current iterator on Callables.
+	 * Current iterator on {@link Callable}s.
 	 */
 	private Iterator<Callable> currentIterator;
 
 	/**
-	 * current depth of the iterator position.
+	 * Current depth of the iterator position.
 	 */
 	private int currentDepth = -1;
 
