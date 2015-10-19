@@ -5,15 +5,15 @@ import rocks.cta.api.core.TimedElement;
 /**
  * A {@link TimedCallable} is a specialized {@link Callable} that has a notion of duration (i.e.
  * response time and exclusive time).
- * 
- * @author Alexander Wert
  *
+ * @author Alexander Wert
  */
 public interface TimedCallable extends Callable, TimedElement {
 
-	/**
-	 * 
-	 * @return exit timestamp when leaving the {@link TimedCallable} in milliseconds
-	 */
-	long getExitTime();
+    /**
+     * Returns the timestamp when the control flow left the {@link TimedCallable}.
+     *
+     * @return exit timestamp when leaving the {@link TimedCallable} in milliseconds
+     */
+    long getExitTime();
 }

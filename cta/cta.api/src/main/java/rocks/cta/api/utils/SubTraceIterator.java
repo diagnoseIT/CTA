@@ -11,7 +11,7 @@ import rocks.cta.api.core.Trace;
 import rocks.cta.api.core.TreeIterator;
 
 /**
- * Iterator over {@link SubTraces} of a {@link Trace}.
+ * Iterator over {@link SubTrace} of a {@link Trace}.
  * 
  * @author Alexander Wert
  *

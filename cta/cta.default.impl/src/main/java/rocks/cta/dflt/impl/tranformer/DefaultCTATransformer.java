@@ -61,7 +61,7 @@ public class DefaultCTATransformer {
 	 * @return corresponding sub trace instance in the default implementation format
 	 */
 	public SubTraceImpl transform(SubTrace subTrace, SubTraceImpl dfltParent, TraceImpl dfltTrace) {
-		SubTraceImpl dfltSubTrace = new SubTraceImpl(subTrace.getId(), dfltParent, dfltTrace);
+		SubTraceImpl dfltSubTrace = new SubTraceImpl(subTrace.getSubTraceId(), dfltParent, dfltTrace);
 
 		// transform location
 		LocationImpl dfltLocation = transform(subTrace.getLocation());

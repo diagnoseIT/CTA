@@ -48,13 +48,13 @@ public class TraceImplTest {
 		int i = 1;
 		for (Callable clbl : mainTrace) {
 			if (i <= TraceCreator.IDX_ON_SUBTRACE_INVOCATION || i > TraceCreator.IDX_ON_SUBTRACE_INVOCATION_END) {
-				Assert.assertEquals(TraceCreator.ROOT_SUB_TRACE_ID, clbl.getContainingSubTrace().getId());
+				Assert.assertEquals(TraceCreator.ROOT_SUB_TRACE_ID, clbl.getContainingSubTrace().getSubTraceId());
 			} else {
-				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl.getContainingSubTrace().getId());
+				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, clbl.getContainingSubTrace().getSubTraceId());
 			}
 			if (i == TraceCreator.IDX_ON_SUBTRACE_INVOCATION) {
 				Assert.assertTrue(clbl instanceof RemoteInvocation);
-				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, ((RemoteInvocation)clbl).getTargetSubTrace().get().getId());
+				Assert.assertEquals(TraceCreator.INVOKED_SUB_TRACE_ID, ((RemoteInvocation)clbl).getTargetSubTrace().get().getSubTraceId());
 			}
 			Assert.assertEquals(TraceCreator.METHOD_PREFIX + i, ((MethodInvocation)clbl).getMethodName());
 			i++;

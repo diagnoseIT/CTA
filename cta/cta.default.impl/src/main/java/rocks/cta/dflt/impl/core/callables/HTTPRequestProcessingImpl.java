@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import rocks.cta.api.core.callables.Callable;
+import rocks.cta.api.core.callables.HTTPMethod;
 import rocks.cta.api.core.callables.HTTPRequestProcessing;
 import rocks.cta.api.utils.StringUtils;
 import rocks.cta.dflt.impl.core.SubTraceImpl;

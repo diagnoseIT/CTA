@@ -5,3 +5,5 @@
 **/bin/**
 **/build/**
 /build/
+**/.idea/**
+*.iml
