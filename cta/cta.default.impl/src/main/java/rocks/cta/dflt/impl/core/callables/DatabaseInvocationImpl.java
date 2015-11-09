@@ -36,22 +36,22 @@ public class DatabaseInvocationImpl extends AbstractTimedCallableImpl implements
 	/**
 	 * Parameter-bound SQL statement.
 	 */
-	private transient Optional<String> boundSQL;
+	private transient Optional<String> boundSQL = Optional.empty();
 
 	/**
 	 * DBMS product name.
 	 */
-	private Optional<String> dbProductName;
+	private Optional<String> dbProductName = Optional.empty();
 
 	/**
 	 * DBMS product version.
 	 */
-	private Optional<String> dbProductVersion;
+	private Optional<String> dbProductVersion = Optional.empty();
 
 	/**
 	 * DB URL.
 	 */
-	private Optional<String> dbUrl;
+	private Optional<String> dbUrl = Optional.empty();
 
 	/**
 	 * parameter bindings.

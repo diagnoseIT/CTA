@@ -76,7 +76,7 @@ public abstract class AbstractNestingCallableImpl extends AbstractTimedCallableI
 	 * @param callee
 	 *            a Callables called by this Callable
 	 */
-	protected void addCallee(Callable callee) {
+	public void addCallee(Callable callee) {
 		if (children == null) {
 			children = new ArrayList<Callable>();
 		}

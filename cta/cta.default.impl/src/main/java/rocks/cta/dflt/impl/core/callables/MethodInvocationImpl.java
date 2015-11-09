@@ -144,9 +144,6 @@ public class MethodInvocationImpl extends AbstractNestingCallableImpl implements
 	 */
 	private String resolveStringId(int id) {
 		String s = ((TraceImpl) containingSubTrace.getContainingTrace()).getStringConstant(id);
-		if (s == null) {
-			throw new IllegalStateException("Signature has not been specified, yet!");
-		}
 		return s;
 	}
 
