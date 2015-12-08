@@ -44,6 +44,7 @@ public class CallableIteratorOnTrace implements TreeIterator<Callable> {
 			currentIterator = Collections.<Callable>emptyList().iterator();
 		} else {
 			currentIterator = new CallableIterator(root.getRoot());
+			iteratorStack.push(currentIterator);
 		}
 	}
 
